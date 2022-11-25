@@ -52,6 +52,7 @@ class Render:
         ]])
           
         bproc.renderer.enable_depth_output(activate_antialiasing=False)
+        bproc.renderer.set_max_amount_of_samples(50)
         bproc.camera.set_intrinsics_from_K_matrix(K=K, 
                                                     image_width= self.image_width, 
                                                     image_height=  self.image_height
