@@ -1,5 +1,5 @@
 # Introduction 
-Simulate many objects falling in a bin and create high detailed annotated images of them.
+Simulate many objects falling in a bin and create high detailed annotated images.
 
 # Dependencies
 Ubuntu >= 18.04 
@@ -24,7 +24,7 @@ If you are having problems with BlenderProc please refer to BlenderProc's guide 
 2. Download haven background dataset
 ```
 cd ~DragonFeeding
-blenderproc download haven Simulation/resources/blenderproc/haven
+blenderproc download haven resources/blenderproc/haven
 ```
 
 1. Install requirements
