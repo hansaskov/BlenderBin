@@ -122,8 +122,8 @@ def get_folders(name, obj_path, box_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--comp',  nargs='?', default='lid', help='Name of the component')
-    parser.add_argument('--obj',  nargs='?', default='3D_model/lid.obj', help='Path to the component object file')
-    parser.add_argument('--box',  nargs='?', default='3D_model/DragonBoxEnvironment.obj', help='Path to the box object file')
+    parser.add_argument('--comp',  nargs='?', default='ape', help='Name of the component')
+    parser.add_argument('--obj',  nargs='?', default='3d_models/comp/ape.obj', help='Path to the component object file')
+    parser.add_argument('--box',  nargs='?', default='3d_models/bin/DragonBoxEnvironment.obj', help='Path to the box object file')
     args = parser.parse_args()
     get_folders(name=args.comp, obj_path=args.obj, box_path=args.box)
