@@ -86,7 +86,6 @@ class Render:
     def load_component(self):
         # Load component.
         # Enable collision, create convex decomposition and copy to a list. 
-
         self.comp_obj = bproc.loader.load_obj(self.comp_object)[0]
         self.comp_obj.enable_rigidbody(active=True, collision_shape="COMPOUND")
         self.comp_obj.build_convex_decomposition_collision_shape(self.vhacd_path, cache_dir=self.cache_path)
@@ -144,22 +143,26 @@ class Render:
         # Make a random material
         material = bproc.material.create("random color")
 
-        h, s, v = np.random.rand(3)
-        r, g, b = colorsys.hsv_to_rgb(h, s, v) 
+        r, g, b = np.random.uniform(0.1, 0.9, 3)
 
         material.set_principled_shader_value("Base Color", [r, g, b, 1])
         material.set_principled_shader_value("Roughness", np.random.uniform(1, 10.0))
         material.set_principled_shader_value("Specular", np.random.uniform(0, 1))
-        material.set_principled_shader_value("Metallic", np.random.uniform(0, 1))
-        material.set_principled_shader_value("Clearcoat", np.random.uniform(0, 1))
-        material.set_principled_shader_value("IOR", np.random.uniform(0, 1))
+        material.set_principled_shader_value("Metallic", np.random.uniform(0, .2))
 
         return material
 
 
     def set_material(self, obj: MeshObject, material: Material):
-        for index in range(len(obj.get_materials())):
-                obj.set_material(index, material)
+
+        number_of_materials = len(obj.get_materials())
+        if number_of_materials > 0:          
+            for index in range(number_of_materials):
+                    obj.set_material(index, material)
+        else: 
+            obj.add_material(material)
+
+        
 
 
     def add_to_comp_list(self, amount: int):
@@ -216,7 +219,6 @@ class Render:
         comp_amount_list.sort()
 
         for amount in comp_amount_list:
-            start = time.time()
         
             # Make a list out of the components that should be used
             self.add_to_comp_list(amount)          
@@ -284,11 +286,11 @@ class Render:
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--comp-amount-max',  nargs='?', default= '40',                                     help='The max amount of components that can be in the bin')
-    parser.add_argument('--comp-amount-min',  nargs='?', default= '8',                                      help='The min amount of components that should be in the bin')
-    parser.add_argument('--comp-number',      nargs='?', default= '1',                                      help='Give each component a different number')
+    parser.add_argument('--comp-amount-max',  nargs='?', default= '10',                                     help='The max amount of components that can be in the bin')
+    parser.add_argument('--comp-amount-min',  nargs='?', default= '1',                                      help='The min amount of components that should be in the bin')
+    parser.add_argument('--comp-number',      nargs='?', default= '7',                                      help='Give each component a different number')
     parser.add_argument('--comp-object',      nargs='?', default= "3d_models/comp/ape.obj",                help='Path to the component object file')
-    parser.add_argument('--number-of-runs',   nargs='?', default= '250',                                    help='The number of simulations you would like to do')
+    parser.add_argument('--number-of-runs',   nargs='?', default= '4',                                    help='The number of simulations you would like to do')
     parser.add_argument('--image-height',     nargs='?', default= "540",                                    help='The height of the rendered images')
     parser.add_argument('--image-width',      nargs='?', default= "720",                                    help='The width of the rendered images')
     parser.add_argument('--bin-object',       nargs='?', default= "3d_models/bins/DragonBoxEnvironment.obj",    help='Path to the box object file')
