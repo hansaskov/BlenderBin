@@ -37,7 +37,8 @@ def get_next_current_images(img_path):
 
 
 def get_folders(name, obj_path, box_path):
-    path = os.path.dirname(__file__) + '/data/'
+    cwd = os.getcwd()
+    path = cwd + '/data/'
     lid_path = path + name
     camera_path = lid_path + '/camera.json'
     # Check if the camera.json file already exists in the collected folder
@@ -45,6 +46,7 @@ def get_folders(name, obj_path, box_path):
 
     # If there is no collected directory, create a new one
     if not os.path.exists(lid_path):
+        print(lid_path)
         os.makedirs(lid_path + '/models/')
         # Save ply from object files
         save_obj_as_ply(obj_path, lid_path + '/models/', 1) 
@@ -52,9 +54,12 @@ def get_folders(name, obj_path, box_path):
         # Move obj and mtl from 3D models  
         shutil.copy(obj_path, lid_path + '/models/obj_' + '1'.zfill(6) + '.obj')
         shutil.copy(box_path, lid_path + '/models/obj_' + '2'.zfill(6) + '.obj')
-        shutil.copy(obj_path[:-4] + '.mtl', lid_path + '/models/' + name + '.mtl')
-        box_name = box_path[:-4].split('/')[-1]
-        shutil.copy(box_path[:-4] + '.mtl', lid_path + '/models/' + box_name + '.mtl')
+        obj_mtl_path = obj_path[:-4] + '.mtl', lid_path + '/models/' + name + '.mtl'
+        obj_mtl_path = box_path[:-4] + '.mtl', lid_path + '/models/' + box_path[:-4].split('/')[-1] + '.mtl'
+        if os.path.exists(obj_mtl_path):
+            shutil.copy(obj_mtl_path)
+        if os.path.exists(obj_mtl_path):
+            shutil.copy(obj_mtl_path)
     
     img_path = get_current_folder(lid_path)
 
@@ -124,6 +129,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--comp',  nargs='?', default='ape', help='Name of the component')
     parser.add_argument('--obj',  nargs='?', default='3d_models/comp/ape.obj', help='Path to the component object file')
-    parser.add_argument('--box',  nargs='?', default='3d_models/bin/DragonBoxEnvironment.obj', help='Path to the box object file')
+    parser.add_argument('--box',  nargs='?', default='3d_models/bins/DragonBoxEnvironment.obj', help='Path to the box object file')
     args = parser.parse_args()
     get_folders(name=args.comp, obj_path=args.obj, box_path=args.box)
