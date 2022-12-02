@@ -17,14 +17,14 @@ class Render:
         self.bin_scale = 1 / 1000
         self.scene_scale = 1
 
-        self.bin_object = args.bin_object
-        self.comp_object = args.comp_object
-        self.comp_number = int(args.comp_number)
+        self.bin_path = args.bin_path
+        self.comp_path = args.comp_path
+        self.instance_num = int(args.instance_num)
         self.comp_amount_max =  int(args.comp_amount_max)
         self.comp_amount_min =  int(args.comp_amount_min)
         self.number_of_runs = int(args.number_of_runs)
-        self.image_height = int(args.image_height)
-        self.image_width = int(args.image_width)
+        self.image_height = int(args.height)
+        self.image_width = int(args.width)
         self.bin_length_x = float(args.bin_length_x) * self.bin_scale
         self.bin_length_y = float(args.bin_length_y) * self.bin_scale
         self.bin_length_z = float(args.bin_length_z) * self.bin_scale
@@ -73,7 +73,7 @@ class Render:
         # Make the bin object actively participate in the physics simulation (they should fall into the bin)
         # Also use convex decomposition as collision shapes
         
-        self.bin_obj = bproc.loader.load_obj(self.bin_object)[0]
+        self.bin_obj = bproc.loader.load_obj(self.bin_path)[0]
         self.bin_obj.enable_rigidbody(active=False, collision_shape="COMPOUND")
         self.bin_obj.build_convex_decomposition_collision_shape(self.vhacd_path, cache_dir= self.cache_path)
         self.bin_obj.set_scale([self.bin_scale, self.bin_scale, self.bin_scale])
@@ -86,7 +86,7 @@ class Render:
     def load_component(self):
         # Load component.
         # Enable collision, create convex decomposition and copy to a list. 
-        self.comp_obj = bproc.loader.load_obj(self.comp_object)[0]
+        self.comp_obj = bproc.loader.load_obj(self.comp_path)[0]
         self.comp_obj.enable_rigidbody(active=True, collision_shape="COMPOUND")
         self.comp_obj.build_convex_decomposition_collision_shape(self.vhacd_path, cache_dir=self.cache_path)
         self.comp_obj.set_scale( [self.comp_scale, self.comp_scale, self.comp_scale])
@@ -269,7 +269,7 @@ class Render:
             # Save data in the bop format
             bproc.writer.write_bop(
                 output_dir=os.path.join(self.output_dir),
-                dataset= self.comp_name + "_" + str(self.comp_number),
+                dataset= self.comp_name + "_" + str(self.instance_num),
                 target_objects= all_visible_comp | set([self.bin_obj]),
                 colors=data['colors'],
                 depths=data['depth'],
@@ -286,20 +286,20 @@ class Render:
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--comp-amount-max',  nargs='?', default= '10',                                     help='The max amount of components that can be in the bin')
     parser.add_argument('--comp-amount-min',  nargs='?', default= '1',                                      help='The min amount of components that should be in the bin')
-    parser.add_argument('--comp-number',      nargs='?', default= '7',                                      help='Give each component a different number')
-    parser.add_argument('--comp-object',      nargs='?', default= "3d_models/comp/ape.obj",                help='Path to the component object file')
-    parser.add_argument('--number-of-runs',   nargs='?', default= '4',                                    help='The number of simulations you would like to do')
-    parser.add_argument('--image-height',     nargs='?', default= "540",                                    help='The height of the rendered images')
-    parser.add_argument('--image-width',      nargs='?', default= "720",                                    help='The width of the rendered images')
-    parser.add_argument('--bin-object',       nargs='?', default= "3d_models/bins/DragonBoxEnvironment.obj",    help='Path to the box object file')
+    parser.add_argument('--comp-amount-max',  nargs='?', default= '10',                                     help='The max amount of components that can be in the bin')
+    parser.add_argument('--number-of-runs',   nargs='?', default= '4',                                      help='The number of simulations you would like to do')
+    parser.add_argument('--instance-num',     nargs='?', default= '7',                                      help='Give each component a different number')
+    parser.add_argument('--width',            nargs='?', default= "720",                                    help='The width of the rendered images')
+    parser.add_argument('--height',           nargs='?', default= "540",                                    help='The height of the rendered images')                             
+    parser.add_argument('--comp-path',        nargs='?', default= "3d_models/comp/ape.obj",                 help='Path to the component object file')
+    parser.add_argument('--bin-path',         nargs='?', default= "3d_models/bins/DragonBoxEnvironment.obj", help='Path to the box object file')
+    parser.add_argument('--comp-rand-color',  nargs='?', default= '1',                                      help='1 if you want to randomize the colors, 0 if there should be no randomization of color')
+    parser.add_argument('--bin-rand-color',   nargs='?', default= '1',                                       help='1 if you want to randomize the colors, 0 if there should be no randomization of color')
     parser.add_argument('--bin-length-x',     nargs='?', default= "176",                                    help='Length of the bin in the x axis in mm')
     parser.add_argument('--bin-length-y',     nargs='?', default= "156",                                    help='Length of the bin in the y axis in mm')
     parser.add_argument('--bin-length-z',     nargs='?', default= "100",                                    help='Height of the bin in mm')
-    parser.add_argument('--comp-rand-color',  nargs='?', default= '1',                                      help='1 if you want to randomize the colors, 0 if there should be no randomization of color')
-    parser.add_argument('--bin-rand-color',  nargs='?', default= '1',                                       help='1 if you want to randomize the colors, 0 if there should be no randomization of color')
-    
+
     args = parser.parse_args()
 
     # Start simulation
