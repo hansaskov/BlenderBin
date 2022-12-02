@@ -1,3 +1,6 @@
 resources/blenderproc/
 resources/vhacd/
+resources/bop_toolkit/scripts/__pycache__/
+resources/bop_toolkit/bop_toolkit_lib/__pycache__/
+resources/bop_toolkit/build/
 data/
