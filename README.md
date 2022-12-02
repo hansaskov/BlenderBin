@@ -8,21 +8,16 @@ Pip
 
 Cmake
 
-Python
-
 # Getting Started
 
-1. Install blenderproc to your python env
+Install dependencies
 ``` 
-pip install blenderproc
-pip install imageio
+pip install .
 ```
 
-If you are having problems with BlenderProc please refer to BlenderProc's guide at their github https://github.com/DLR-RM/BlenderProc 
 
-2. Download haven background dataset
+For bin_render.py Download haven background dataset into the resource folder.
 ```
-cd ~DragonFeeding
 blenderproc download haven resources/blenderproc/haven
 ```
 
@@ -32,7 +27,20 @@ These models will be loaded into the scene and the box will be filled with dupli
 
 The render can be run with the following command:
 ```
-blenderproc run Simulation/render.py --comp-amount-max MAX_COMP_AMOUNT --comp-amount-min MIN_COMP_AMOUNT --comp-number COMP_NUMBER --comp-object PATH_TO_COMP --number-of-runs NUM_RUNS --image-height IMAGE_HEIGHT --image-width IMAGE_WIDTH --bin-object PATH_TO_BIN --bin-length-x BIN_LENGTH_X --bin-length-y BIN_LENGTH_Y --bin-length-z BIN_LENGTH_Z --bop-dataset-name DATASET_NAME
+blenderproc run bin_render.py \
+--comp-amount-max 10 \
+--comp-amount-min 1 \
+--number-of-runs 10 \
+--instance-num 1 \
+--width 720 \
+--height 540 \
+--comp-path 3d_models/comp/ape.obj \
+--bin-path 3d_models/bins/DragonBoxEnvironment.obj \
+--comp-rand-color 1 \
+--bin-rand-color 1  \
+--bin-length-x 176 \
+--bin-length-y 156 \
+--bin-length-z 100 
 ```
 
 MAX_COMP_AMOUNT is the maximum number of components that can/should be in the bin. 
