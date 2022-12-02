@@ -9,17 +9,29 @@ Pip
 Cmake
 
 # Getting Started
+Download repository
+``` 
+git clone https://github.com/hansaskov/BlenderBin
+cd ./BlenderBin
+``` 
 
 Install dependencies
 ``` 
-pip install .
+pip install -r requirements.txt
 ```
 
-
-For bin_render.py Download haven background dataset into the resource folder.
+For bin_render.py Download the haven background . 
 ```
 blenderproc download haven resources/blenderproc/haven
 ```
+For bop_render.py Download cc_textures . 
+```
+blenderproc download cc_textures resources/blenderproc/cctextures
+```
+This might take some time. We reccomend running both commands in seprate terminals. 
+
+
+
 
 # Build and Test
 You will need a box or environment 3D model and a 3D model of your component, in .obj format. 
