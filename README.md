@@ -14,9 +14,8 @@ Python
 
 1. Install blenderproc to your python env
 ``` 
-git clone https://github.com/DLR-RM/BlenderProc
-cd BlenderProc
-pip install -e .
+pip install blenderproc
+pip install imageio
 ```
 
 If you are having problems with BlenderProc please refer to BlenderProc's guide at their github https://github.com/DLR-RM/BlenderProc 
@@ -25,11 +24,6 @@ If you are having problems with BlenderProc please refer to BlenderProc's guide 
 ```
 cd ~DragonFeeding
 blenderproc download haven resources/blenderproc/haven
-```
-
-1. Install requirements
-```
-pip install -r requirements.txt
 ```
 
 # Build and Test
