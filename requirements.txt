@@ -1,0 +1,7 @@
+blenderproc
+vispy
+scipy
+pypng
+imageio
+PyOpenGL
+open3d
