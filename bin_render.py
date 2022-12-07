@@ -36,27 +36,31 @@ class Render:
         self.bin_rand = bool(int(args.bin_rand_color))
 
         K = np.array([[
-            1778.3310171575256,
-            0.0,
-            360.4576775345107
-        ],
-        [
-            0.0,
-            1593.9215905532888,
-            289.6229559399596
-        ],
-        [
-            0.0,
-            0.0,
-            1.0
-        ]])
-          
+                                6045.585213009336,
+                                0.0,
+                                1209.1873115324627
+                            ],
+                            [
+                                0.0,
+                                6045.2679752027225,
+                                1094.2715614796484
+                            ],
+                            [
+                                0.0,
+                                0.0,
+                                1.0
+                            ]])
+            
+
         bproc.renderer.enable_depth_output(activate_antialiasing=False)
         bproc.renderer.set_max_amount_of_samples(50)
         bproc.camera.set_intrinsics_from_K_matrix(K=K, 
-                                                    image_width= self.image_width, 
-                                                    image_height=  self.image_height
+                                                    image_width= 2448, 
+                                                    image_height= 2048
         )
+        bproc.camera.set_resolution(self.image_width, self.image_height)
+        print(bproc.camera.get_intrinsics_as_K_matrix())
+
 
         # Create lighting
         self.light = bproc.types.Light()
@@ -292,7 +296,7 @@ if __name__ == "__main__":
     parser.add_argument('--instance-num',     nargs='?', default= '1',                                      help='Give each component a different number')
     parser.add_argument('--width',            nargs='?', default= "720",                                    help='The width of the rendered images')
     parser.add_argument('--height',           nargs='?', default= "540",                                    help='The height of the rendered images')                             
-    parser.add_argument('--comp-path',        nargs='?', default= "3d_models/comp/ape.obj",                 help='Path to the component object file')
+    parser.add_argument('--comp-path',        nargs='?', default= "/home/robotlab/Desktop/HAOV/DragonFeeding/3D_model/lid.obj",                 help='Path to the component object file')
     parser.add_argument('--bin-path',         nargs='?', default= "3d_models/bins/DragonBoxEnvironment.obj", help='Path to the box object file')
     parser.add_argument('--comp-rand-color',  nargs='?', default= '1',                                      help='1 if you want to randomize the colors, 0 if there should be no randomization of color')
     parser.add_argument('--bin-rand-color',   nargs='?', default= '1',                                       help='1 if you want to randomize the colors, 0 if there should be no randomization of color')
