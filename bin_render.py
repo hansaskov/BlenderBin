@@ -296,7 +296,7 @@ if __name__ == "__main__":
     parser.add_argument('--instance-num',     nargs='?', default= '1',                                      help='Give each component a different number')
     parser.add_argument('--width',            nargs='?', default= "720",                                    help='The width of the rendered images')
     parser.add_argument('--height',           nargs='?', default= "540",                                    help='The height of the rendered images')                             
-    parser.add_argument('--comp-path',        nargs='?', default= "/home/robotlab/Desktop/HAOV/DragonFeeding/3D_model/lid.obj",                 help='Path to the component object file')
+    parser.add_argument('--comp-path',        nargs='?', default= "3d_models/comp/ape.obj",                 help='Path to the component object file')
     parser.add_argument('--bin-path',         nargs='?', default= "3d_models/bins/DragonBoxEnvironment.obj", help='Path to the box object file')
     parser.add_argument('--comp-rand-color',  nargs='?', default= '1',                                      help='1 if you want to randomize the colors, 0 if there should be no randomization of color')
     parser.add_argument('--bin-rand-color',   nargs='?', default= '1',                                       help='1 if you want to randomize the colors, 0 if there should be no randomization of color')
