@@ -5,6 +5,7 @@ import numpy as np
 import os
 import math
 import json
+import random
 
 from blenderproc.python.types.MeshObjectUtility import MeshObject
 from blenderproc.python.types.MaterialUtility import Material
@@ -38,7 +39,7 @@ class Config:
         with open(json_file, 'r') as f:
             data = json.load(f)
 
-        self.comps = [self.Component(comp) for comp in data['comp']]
+        self.components = [self.Component(comp) for comp in data['comp']]
         self.bins = [self.Bin(bin) for bin in data['bins']]
         self.camera = self.Camera(data['camera'])
 
@@ -67,10 +68,6 @@ class Render:
             # Set obj variables
             self.obj.set_shading_mode('auto')
             self.obj.set_cp("category_id", comp_config.name)
-
-            # Get dimensions of the component and set longest x,y,z dimension
-            bounding_box = self.obj.get_bound_box().flatten()
-            self.length = max(abs(bounding_box))
 
             # Get component name and save output path.
             self.name = self.obj.get_name()
@@ -141,27 +138,37 @@ class Render:
         self.light = bproc.types.Light()
 
         # Load the bin with the environment
-        self.bin = self.Bin(config.bins[0])
+        self.comps = list(map(lambda comp: self.Component(comp), config.components))
 
         # Load the component
-        self.comp = self.Component(config.comps[0])
+        self.bin = self.Bin(config.bins[0])
+
+
+    def get_all_comp_objs(self): 
+        return sum(list(map(lambda comp: comp.obj_list, self.comps)), [])
+
 
     def sample_pose(self, obj: MeshObject):
         # Define a function that samples random 6-DoF poses
         obj.set_rotation_euler(bproc.sampler.uniformSO3())
 
-        box_volume = (self.bin.length_x - 2 * self.comp.length) * (self.bin.length_y - 2 * self.comp.length) * self.bin.length_z
-        comp_list_volume = self.comp.volume * len(self.comp.obj_list)
-        volume_frac = comp_list_volume / box_volume
+        # Get dimensions of the component and set longest x,y,z dimension
+        bounding_box = obj.get_bound_box().flatten()
+        length = max(abs(bounding_box))
+
+        total_volume = sum(list(map(lambda comp: comp.volume * len(comp.obj_list), self.comps)))
+        box_volume = (self.bin.length_x - 2 * length) * (self.bin.length_y - 2 * length) * self.bin.length_z
+
+        volume_frac = total_volume / box_volume
 
         obj.set_location(np.random.uniform(
             [
-                -self.bin.length_x/2 + self.comp.length,
-                -self.bin.length_y/2 + self.comp.length,
+                -self.bin.length_x/2 + length,
+                -self.bin.length_y/2 + length,
                 self.bin.length_z * 1.1
             ], [
-                self.bin.length_x/2 - self.comp.length,
-                self.bin.length_y/2 - self.comp.length,
+                self.bin.length_x/2 - length,
+                self.bin.length_y/2 - length,
                 self.bin.length_z * (1.1 + volume_frac * 3)
             ]
         ))
@@ -204,7 +211,7 @@ class Render:
 
         for i in range(amount):
 
-            poi = bproc.object.compute_poi(np.random.choice(self.comp.obj_list, size=3))
+            poi = bproc.object.compute_poi(np.random.choice(self.get_all_comp_objs(), size=3))
 
             # Sample location
             location = bproc.sampler.shell(
@@ -229,13 +236,10 @@ class Render:
             obj_visible = bproc.camera.visible_objects(cam2world, sqrt_rays)
 
             # Filter to save showm components
-            visible_comp = set(obj_visible) - (set(obj_visible) - set(self.comp.obj_list) )
+            visible_comp = set(obj_visible) - (set(obj_visible) - set(self.get_all_comp_objs()) )
 
             # Add newly visible components to the list of all visible components
             all_visible_comp = all_visible_comp | visible_comp
-
-        for comp in all_visible_comp:
-            print(comp.get_name(), comp.get_location())
 
         return all_visible_comp
 
@@ -247,37 +251,44 @@ class Render:
         for amount in comp_amount_list:
 
             # Make a list out of the components that should be used
-            self.comp.add_to_obj_list(amount)
+            comp = random.choice(self.comps)
+            comp.add_to_obj_list(amount)
 
             # Sample the poses of all component objects above the ground without any collisions in-between
             bproc.object.sample_poses(
-                self.comp.obj_list,
+                self.get_all_comp_objs(),
                 sample_pose_func=self.sample_pose,
-                objects_to_check_collisions=self.comp.obj_list + [self.bin.obj],
+                objects_to_check_collisions=self.get_all_comp_objs() + [self.bin.obj],
                 max_tries= 1000
             )
+
 
             # Run the physics simulation
             bproc.object.simulate_physics_and_fix_final_poses(
                 min_simulation_time=2,
                 max_simulation_time=3,
                 check_object_interval= 0.5,
-                object_stopped_location_threshold = self.comp.length * 0.1,
+                object_stopped_location_threshold = 0.01,
                 object_stopped_rotation_threshold = 5,
                 substeps_per_frame = 30,
                 solver_iters= 20,
             )
 
+            
             # Change material of the bin
             if self.bin.random_color:
                bin_material = self.randomize_materials()
                self.set_material(self.bin.obj, bin_material)
 
             # Randomize material and set component to that material.
-            if self.comp.random_color:
-                comp_material = self.randomize_materials()
-                for comp in self.comp.obj_list:
-                    self.set_material(comp, comp_material)
+
+            for comp in self.comps:
+                if comp.random_color:
+                    comp_material = self.randomize_materials()
+                    for comp in comp.obj_list:
+                        self.set_material(comp, comp_material)
+
+            
 
             # Set a random background
             haven_hdri_path = bproc.loader.get_random_world_background_hdr_img_path_from_haven(haven_path)
@@ -295,7 +306,7 @@ class Render:
             # Save data in the bop format
             bproc.writer.write_bop(
                 output_dir=os.path.join(output_dir),
-                dataset=self.comp.name + "_" + str(self.instance_num),
+                dataset=self.comps[0].name + "_" + str(self.instance_num),
                 target_objects= all_visible_comp | set([self.bin.obj]),
                 colors=data['colors'],
                 depths=data['depth'],
@@ -313,9 +324,9 @@ class Render:
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--comp-amount-min',  nargs='?', default='3', help='The min amount of components that should be in the bin')
-    parser.add_argument('--comp-amount-max',  nargs='?', default='4', help='The max amount of components that can be in the bin')
-    parser.add_argument('--number-of-runs',   nargs='?', default='1', help='The number of simulations you would like to do')
+    parser.add_argument('--comp-amount-min',  nargs='?', default='1', help='The min amount of components that should be in the bin')
+    parser.add_argument('--comp-amount-max',  nargs='?', default='8', help='The max amount of components that can be in the bin')
+    parser.add_argument('--number-of-runs',   nargs='?', default='4', help='The number of simulations you would like to do')
     parser.add_argument('--instance-num',     nargs='?', default='1', help='Give each component a different number')
     args = parser.parse_args()
 
