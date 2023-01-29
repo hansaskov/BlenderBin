@@ -63,7 +63,7 @@ class Render:
 
             # Scale comp if given in mm
             if (comp_config.mm_2_m):
-                self.obj.set_scale([1/1000, 1/1000, 1/1000])
+                self.obj.set_scale([1/2000, 1/2000, 1/2000])
 
             # Set obj variables
             self.obj.set_shading_mode('auto')
@@ -83,7 +83,7 @@ class Render:
 
         def add_to_obj_list(self, amount: int):
             # Check if new components needs to be added
-            for i in range(amount - len(self.obj_list)):
+            for i in range(amount):
                 self.obj_list.append(self.obj.duplicate())
 
     class Bin:
@@ -211,7 +211,8 @@ class Render:
 
         for i in range(amount):
 
-            poi = bproc.object.compute_poi(np.random.choice(self.get_all_comp_objs(), size=3))
+            components_over_z = list(filter(lambda comp: comp.get_location()[2] < -0.2, self.get_all_comp_objs()))
+            poi = bproc.object.compute_poi(np.random.choice(components_over_z, size=3))
 
             # Sample location
             location = bproc.sampler.shell(
@@ -252,7 +253,7 @@ class Render:
 
             # Make a list out of the components that should be used
             comp = random.choice(self.comps)
-            comp.add_to_obj_list(amount)
+            comp.add_to_obj_list(amount - len(self.get_all_comp_objs()))
 
             # Sample the poses of all component objects above the ground without any collisions in-between
             bproc.object.sample_poses(
@@ -261,7 +262,6 @@ class Render:
                 objects_to_check_collisions=self.get_all_comp_objs() + [self.bin.obj],
                 max_tries= 1000
             )
-
 
             # Run the physics simulation
             bproc.object.simulate_physics_and_fix_final_poses(
@@ -325,9 +325,9 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--comp-amount-min',  nargs='?', default='1', help='The min amount of components that should be in the bin')
-    parser.add_argument('--comp-amount-max',  nargs='?', default='8', help='The max amount of components that can be in the bin')
-    parser.add_argument('--number-of-runs',   nargs='?', default='4', help='The number of simulations you would like to do')
-    parser.add_argument('--instance-num',     nargs='?', default='1', help='Give each component a different number')
+    parser.add_argument('--comp-amount-max',  nargs='?', default='20', help='The max amount of components that can be in the bin')
+    parser.add_argument('--number-of-runs',   nargs='?', default='5', help='The number of simulations you would like to do')
+    parser.add_argument('--instance-num',     nargs='?', default='2', help='Give each component a different number')
     args = parser.parse_args()
 
     config = Config('config.json')
