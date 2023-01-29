@@ -1,0 +1,32 @@
+{ 
+    "comp": [
+        {
+            "name" : "ape",
+            "path" : "./3d_models/comp/ape.obj",
+            "random_color" : true,
+            "mm_2_m": true
+        }
+    ],
+
+    "bins" :  [
+        {
+            "path" : "./3d_models/bins/square_box.obj",
+            "random_color" : false, 
+            "mm_2_m": true,
+            "dimensions": [
+                176,
+                156,
+                100
+            ]
+        }
+    ],
+
+    "camera": {
+        "cx": 355.29037487506866,
+        "cy": 290.31518501860995,
+        "fx": 1778.1134033203125,
+        "fy": 1778.0201424523975,
+        "height": 540,
+        "width": 720
+      }
+}

@@ -1,83 +1,55 @@
-# Introduction 
-Simulate many objects falling in a bin and create high detailed annotated images.
+# Introduction
+
+Simulate many objects falling in a bin and create high detailed annotated images with the BlenderBin repository.
+Dependencies
 
 # Dependencies
-Ubuntu >= 18.04 
 
-Pip
+To use the BlenderBin repository, a Linux-based operating system is required. The repository has been tested on Ubuntu 18.04 and 22.04. Additionally, CMake must be installed.
+Getting Started
 
-Cmake
+To begin, download the repository:
 
-# Getting Started
-Download repository
-``` 
+``` bash
 git clone https://github.com/hansaskov/BlenderBin
 cd ./BlenderBin
-``` 
+```
 
-Install dependencies
-``` 
+Next, install the necessary dependencies:
+
+``` bash
 pip install -r requirements.txt
 ```
+For the bin_render.py script, download the Haven background:
 
-For bin_render.py Download the haven background . 
-```
+``` bash
 blenderproc download haven resources/blenderproc/haven
 ```
-For bop_render.py Download cc_textures . 
-```
+For the bop_render.py script, download the CC_Textures:
+
+``` bash
 blenderproc download cc_textures resources/blenderproc/cctextures
 ```
-This might take some time. We reccomend running both commands in seprate terminals. 
+Note that these commands may take some time to complete. It is recommended to run them in separate terminals.
+Running the Render
+
+# Running the Render
+
+To test the program, run the following command using the default component and bin:
 
 
-
-
-# Build and Test
-You will need a box or environment 3D model and a 3D model of your component, in .obj format. 
-These models will be loaded into the scene and the box will be filled with duplicates of the component. 
-
-The render can be run with the following command:
+``` bash
+blenderproc run bin_render.py
 ```
+To use your own objects, you will need a 3D model of a box or environment and a 3D model of your component, in either .obj format. These models must be set in the config.json file.
+
+To adjust runtime settings, such as the number of components to simulate and the number of runs, you can use the following arguments:
+
+
+``` bash
 blenderproc run bin_render.py \
---comp-amount-max 10 \
 --comp-amount-min 1 \
+--comp-amount-max 10 \
 --number-of-runs 10 \
 --instance-num 1 \
---width 720 \
---height 540 \
---comp-path 3d_models/comp/ape.obj \
---bin-path 3d_models/bins/DragonBoxEnvironment.obj \
---comp-rand-color 1 \
---bin-rand-color 1  \
---bin-length-x 176 \
---bin-length-y 156 \
---bin-length-z 100 
 ```
-
-MAX_COMP_AMOUNT is the maximum number of components that can/should be in the bin. 
-
-MIN_COMP_AMOUNT is the minimum number of components that should be in the bin.
-
-COMP_NUMBER is a number for the component. If you're using more than one component in your simulations, we suggest that you use a different number for different components.
-
-PATH_TO_COMP is the path to the components .obj or .ply file.
-
-NUM_RUNS is the amount of iterations you want to do. Each iteration generates between two to four images.
-
-IMAGE_HEIGHT is the number of pixels in the image's y axis.
-
-IMAGE_WIDTH is the number of pixels in the image's x axis.
-
-PATH_TO_BIN is the path to the bin or environment's .obj or .ply file.
-
-BIN_LENGTH_X is the bin's length in the x axis.
-
-BIN_LENGTH_Y is the bin's length in the y axis.
-
-BIN_LENGTH_Z is the bin's length in the z axis.
-
-DATASET_NAME is the desired name for your BOP dataset
-
-
-Side note: If you're going to run multiple simulations with the same bin and/or the same components, we recommend going into the Simulation/render.py file and add your arguments as the default arguments in order to save you time in the future.
