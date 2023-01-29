@@ -211,8 +211,8 @@ class Render:
 
         for i in range(amount):
 
-            components_over_z = list(filter(lambda comp: comp.get_location()[2] < -0.2, self.get_all_comp_objs()))
-            poi = bproc.object.compute_poi(np.random.choice(components_over_z, size=3))
+           # components_over_z = list(filter(lambda comp: comp.get_location()[2] > -0.2, self.get_all_comp_objs()))
+            poi = bproc.object.compute_poi(np.random.choice(self.get_all_comp_objs(), size=3))
 
             # Sample location
             location = bproc.sampler.shell(
