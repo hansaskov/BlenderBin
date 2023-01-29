@@ -209,10 +209,10 @@ class Render:
             # Sample location
             location = bproc.sampler.shell(
                 center=[0, 0, 0.64],
-                radius_min=0.025,
-                radius_max=0.020,
-                elevation_min=-10,
-                elevation_max=89.5,
+                radius_min=0.05,
+                radius_max=0.2,
+                elevation_min=-20,
+                elevation_max=89.999,
                 uniform_volume=True
             )
             # calculate rotation towards point of intrest
@@ -229,13 +229,13 @@ class Render:
             obj_visible = bproc.camera.visible_objects(cam2world, sqrt_rays)
 
             # Filter to save showm components
-            visible_comp = list(set(obj_visible) - (set(obj_visible) - set(self.comp.obj_list)))
-
-            # Find if the camera can see new visible components not previously seen
-            new_visible_comp = set(visible_comp) - set(visible_comp)
+            visible_comp = set(obj_visible) - (set(obj_visible) - set(self.comp.obj_list) )
 
             # Add newly visible components to the list of all visible components
-            all_visible_comp = all_visible_comp | new_visible_comp
+            all_visible_comp = all_visible_comp | visible_comp
+
+        for comp in all_visible_comp:
+            print(comp.get_name(), comp.get_location())
 
         return all_visible_comp
 
@@ -296,7 +296,7 @@ class Render:
             bproc.writer.write_bop(
                 output_dir=os.path.join(output_dir),
                 dataset=self.comp.name + "_" + str(self.instance_num),
-                target_objects=all_visible_comp | set([self.bin.obj]),
+                target_objects= all_visible_comp | set([self.bin.obj]),
                 colors=data['colors'],
                 depths=data['depth'],
                 color_file_format="JPEG",
@@ -313,8 +313,8 @@ class Render:
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--comp-amount-min',  nargs='?', default='1', help='The min amount of components that should be in the bin')
-    parser.add_argument('--comp-amount-max',  nargs='?', default='2', help='The max amount of components that can be in the bin')
+    parser.add_argument('--comp-amount-min',  nargs='?', default='3', help='The min amount of components that should be in the bin')
+    parser.add_argument('--comp-amount-max',  nargs='?', default='4', help='The max amount of components that can be in the bin')
     parser.add_argument('--number-of-runs',   nargs='?', default='1', help='The number of simulations you would like to do')
     parser.add_argument('--instance-num',     nargs='?', default='1', help='Give each component a different number')
     args = parser.parse_args()
