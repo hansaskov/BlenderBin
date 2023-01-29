@@ -313,8 +313,8 @@ class Render:
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--comp-amount-min',  nargs='?', default='2', help='The min amount of components that should be in the bin')
-    parser.add_argument('--comp-amount-max',  nargs='?', default='5', help='The max amount of components that can be in the bin')
+    parser.add_argument('--comp-amount-min',  nargs='?', default='1', help='The min amount of components that should be in the bin')
+    parser.add_argument('--comp-amount-max',  nargs='?', default='2', help='The max amount of components that can be in the bin')
     parser.add_argument('--number-of-runs',   nargs='?', default='1', help='The number of simulations you would like to do')
     parser.add_argument('--instance-num',     nargs='?', default='1', help='Give each component a different number')
     args = parser.parse_args()

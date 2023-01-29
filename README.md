@@ -1,7 +1,6 @@
 # Introduction
 
 Simulate many objects falling in a bin and create high detailed annotated images with the BlenderBin repository.
-Dependencies
 
 # Dependencies
 
@@ -31,17 +30,11 @@ For the bop_render.py script, download the CC_Textures:
 blenderproc download cc_textures resources/blenderproc/cctextures
 ```
 Note that these commands may take some time to complete. It is recommended to run them in separate terminals.
-Running the Render
 
 # Running the Render
 
 To test the program, run the following command using the default component and bin:
 
-
-``` bash
-blenderproc run bin_render.py
-```
-To use your own objects, you will need a 3D model of a box or environment and a 3D model of your component, in either .obj format. These models must be set in the config.json file.
 
 To adjust runtime settings, such as the number of components to simulate and the number of runs, you can use the following arguments:
 
@@ -52,4 +45,44 @@ blenderproc run bin_render.py \
 --comp-amount-max 10 \
 --number-of-runs 10 \
 --instance-num 1 \
+```
+
+``` bash
+blenderproc run bin_render.py
+```
+To use your own objects, you will need a 3D model of a box or environment and a 3D model of your component, in either .obj format. These models must be set in the config.json file.
+
+``` json 
+{ 
+    "comp": [
+        {
+            "name" : "ape",
+            "path" : "./3d_models/comp/ape.obj",
+            "random_color" : true,
+            "mm_2_m": true
+        }
+    ],
+
+    "bins" :  [
+        {
+            "path" : "./3d_models/bins/square_box.obj",
+            "random_color" : false, 
+            "mm_2_m": true,
+            "dimensions": [
+                176,
+                156,
+                100
+            ]
+        }
+    ],
+
+    "camera": {
+        "cx": 355.29037487506866,
+        "cy": 290.31518501860995,
+        "fx": 1778.1134033203125,
+        "fy": 1778.0201424523975,
+        "height": 540,
+        "width": 720
+      }
+}
 ```
