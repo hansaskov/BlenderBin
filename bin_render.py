@@ -137,10 +137,10 @@ class Render:
         # Create lighting
         self.light = bproc.types.Light()
 
-        # Load the bin with the environment
+        # Load the component
         self.comps = list(map(lambda comp: self.Component(comp), config.components))
 
-        # Load the component
+        # Load the bin with the environment
         self.bin = self.Bin(config.bins[0])
 
 
@@ -211,8 +211,8 @@ class Render:
 
         for i in range(amount):
 
-           # components_over_z = list(filter(lambda comp: comp.get_location()[2] > -0.2, self.get_all_comp_objs()))
-            poi = bproc.object.compute_poi(np.random.choice(self.get_all_comp_objs(), size=3))
+            # Calculate a point of interest with a random percentage of bin size offset from the center
+            poi = np.array([np.random.uniform(-0.3*self.bin.length_x, 0.3*self.bin.length_x), np.random.uniform(-0.3*self.bin.length_y, 0.3*self.bin.length_y), np.random.uniform(-0.1*self.bin.length_z, 0.3*self.bin.length_z)])
 
             # Sample location
             location = bproc.sampler.shell(
