@@ -33,10 +33,11 @@ Note that these commands may take some time to complete. It is recommended to ru
 # Running the Render
 
 To test the program, run the following command using the default component and bin:
-
+``` bash
+blenderproc run bin_render.py
+```
 
 To adjust runtime settings, such as the number of components to simulate and the number of runs, you can use the following arguments:
-
 
 ``` bash
 blenderproc run bin_render.py \
@@ -46,9 +47,7 @@ blenderproc run bin_render.py \
 --instance-num 1 \
 ```
 
-``` bash
-blenderproc run bin_render.py
-```
+
 To use your own objects, you will need a 3D model of a box or environment and a 3D model of your component, in either .obj format. These models must be set in the config.json file.
 
 ``` json 
