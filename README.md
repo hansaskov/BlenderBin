@@ -48,7 +48,7 @@ blenderproc run bin_render.py \
 ```
 
 
-To use your own objects, you will need a 3D model of a box or environment and a 3D model of your component, in either .obj format. These models must be set in the config.json file.
+To use your own objects, you will need a 3D model of a box or environment and a 3D model of your component, in either the .ply or .obj format. These changes must be made in the config.json file.
 
 ``` json 
 { 
