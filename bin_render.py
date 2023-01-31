@@ -220,7 +220,7 @@ class Render:
                 radius_min=0.05,
                 radius_max=0.2,
                 elevation_min=-20,
-                elevation_max=89.999,
+                elevation_max=90,
                 uniform_volume=True
             )
             # calculate rotation towards point of intrest

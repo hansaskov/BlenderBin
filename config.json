@@ -5,6 +5,12 @@
             "path" : "./3d_models/comp/ape.obj",
             "random_color" : true,
             "mm_2_m": true
+        },
+        {
+            "name" : "coffee_cup",
+            "path" : "./3d_models/comp/coffee_cup.ply",
+            "random_color" : false,
+            "mm_2_m": true
         }
     ],
 
