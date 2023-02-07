@@ -63,7 +63,7 @@ class Render:
 
             # Scale comp if given in mm
             if (comp_config.mm_2_m):
-                self.obj.set_scale([1/2000, 1/2000, 1/2000])
+                self.obj.set_scale([1/1000, 1/1000, 1/1000])
 
             # Set obj variables
             self.obj.set_shading_mode('auto')
@@ -114,6 +114,32 @@ class Render:
             self.path = bin_config.path
             self.mm_2_m = bin_config.mm_2_m
             self.random_color = bin_config.random_color
+            
+            self.walls = []
+
+            self.wall = bproc.loader.load_obj('./3d_models/bins/angled_wall.obj')[0]
+            self.wall.set_scale([self.length_y, 1/1000, 1/100])
+            self.wall.enable_rigidbody(active=False, collision_shape="COMPOUND")
+            self.wall.set_location([0, -self.length_y/2, 0])
+            self.walls.append(self.wall)
+        
+            wall1 = self.wall.duplicate()
+            wall1.set_rotation_euler(self.wall.get_rotation_euler() + [0, 0, self.wall.get_rotation_euler()[0]*2])
+            wall1.set_location([0, self.length_y/2, 0])
+            wall1.enable_rigidbody(active=False, collision_shape="COMPOUND")
+            self.walls.append(wall1)
+
+            wall2 = self.wall.duplicate()
+            wall2.set_rotation_euler(self.wall.get_rotation_euler() + [0, 0, self.wall.get_rotation_euler()[0]])
+            wall2.set_location([self.length_x/2, 0, 0])
+            wall2.enable_rigidbody(active=False, collision_shape="COMPOUND")
+            self.walls.append(wall2)
+
+            wall3 = self.wall.duplicate()
+            wall3.set_rotation_euler(self.wall.get_rotation_euler() + [0, 0, self.wall.get_rotation_euler()[0]*3])
+            wall3.set_location([-self.length_x/2, 0, 0])
+            wall3.enable_rigidbody(active=False, collision_shape="COMPOUND")
+            self.walls.append(wall3)
 
     def __init__(self, config: Config, args):
         bproc.init()
@@ -142,7 +168,7 @@ class Render:
         self.comps = list(map(lambda comp: self.Component(comp), config.components))
 
         # Load the bin with the environment
-        self.bin = self.Bin(config.bins[0])
+        self.bin = self.Bin(config.bins[1])
 
 
     def get_all_comp_objs(self): 
@@ -210,7 +236,7 @@ class Render:
 
             # Sample random location
             location = bproc.sampler.shell(
-                center=[0, 0, 0.64],
+                center=[0, 0, 1.64],
                 radius_min=0.05,
                 radius_max=0.2,
                 elevation_min=-20,
@@ -280,9 +306,7 @@ class Render:
                 if comp.random_color:
                     comp_material = self.randomize_materials()
                     for comp in comp.obj_list:
-                        comp.replace_materials(comp_material)
-
-            
+                        self.set_material(comp, comp_material)
 
             # Set a random background
             if self.random_background: 
@@ -291,6 +315,10 @@ class Render:
 
             # Make lighting
             self.randomize_light()
+
+            # Make walls invisible
+            for wall in self.bin.walls:
+                wall.hide(True)
 
             # Make 4 random camera poses
             all_visible_comp = self.randomize_camera_poses(4)
