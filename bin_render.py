@@ -122,6 +122,7 @@ class Render:
         self.number_of_runs = int(args.number_of_runs)
         self.comp_amount_max = int(args.comp_amount_max)
         self.comp_amount_min = int(args.comp_amount_min)
+        self.random_background = bool(args.random_bg)
 
         self.camera = config.camera
 
@@ -199,12 +200,13 @@ class Render:
 
     def set_material(self, obj: MeshObject, material: Material):
 
-        number_of_materials = len(obj.get_materials())
-        if number_of_materials > 0:
-            for index in range(number_of_materials):
+        materials = obj.get_materials()
+        if materials:
+            for index in range(len(materials)):
                 obj.set_material(index, material)
         else:
             obj.add_material(material)
+
 
     def randomize_camera_poses(self, amount):
         all_visible_comp = set()
@@ -291,8 +293,9 @@ class Render:
             
 
             # Set a random background
-            haven_hdri_path = bproc.loader.get_random_world_background_hdr_img_path_from_haven(haven_path)
-            bproc.world.set_world_background_hdr_img(haven_hdri_path)
+            if self.random_background: 
+                haven_hdri_path = bproc.loader.get_random_world_background_hdr_img_path_from_haven(haven_path)
+                bproc.world.set_world_background_hdr_img(haven_hdri_path)
 
             # Make lighting
             self.randomize_light()
@@ -325,9 +328,10 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--comp-amount-min',  nargs='?', default='1', help='The min amount of components that should be in the bin')
-    parser.add_argument('--comp-amount-max',  nargs='?', default='20', help='The max amount of components that can be in the bin')
-    parser.add_argument('--number-of-runs',   nargs='?', default='5', help='The number of simulations you would like to do')
-    parser.add_argument('--instance-num',     nargs='?', default='2', help='Give each component a different number')
+    parser.add_argument('--comp-amount-max',  nargs='?', default='5', help='The max amount of components that can be in the bin')
+    parser.add_argument('--number-of-runs',   nargs='?', default='1', help='The number of simulations you would like to do')
+    parser.add_argument('--instance-num',     nargs='?', default='1', help='Give each component a different number')
+    parser.add_argument('--random-bg', action=argparse.BooleanOptionalAction, default=True, help="Add a random background to the skybox from the haven benchmark")
     args = parser.parse_args()
 
     config = Config('config.json')
