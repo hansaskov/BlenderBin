@@ -115,31 +115,28 @@ class Render:
             self.mm_2_m = bin_config.mm_2_m
             self.random_color = bin_config.random_color
             
-            self.walls = []
+    class Wall:
+        def __init__(self, bin_shape):
+            # Load one wall
 
-            self.wall = bproc.loader.load_obj('./3d_models/bins/angled_wall.obj')[0]
-            self.wall.set_scale([self.length_y, 1/1000, 1/100])
-            self.wall.enable_rigidbody(active=False, collision_shape="COMPOUND")
-            self.wall.set_location([0, -self.length_y/2, 0])
-            self.walls.append(self.wall)
-        
-            wall1 = self.wall.duplicate()
-            wall1.set_rotation_euler(self.wall.get_rotation_euler() + [0, 0, self.wall.get_rotation_euler()[0]*2])
-            wall1.set_location([0, self.length_y/2, 0])
-            wall1.enable_rigidbody(active=False, collision_shape="COMPOUND")
-            self.walls.append(wall1)
 
-            wall2 = self.wall.duplicate()
-            wall2.set_rotation_euler(self.wall.get_rotation_euler() + [0, 0, self.wall.get_rotation_euler()[0]])
-            wall2.set_location([self.length_x/2, 0, 0])
-            wall2.enable_rigidbody(active=False, collision_shape="COMPOUND")
-            self.walls.append(wall2)
 
-            wall3 = self.wall.duplicate()
-            wall3.set_rotation_euler(self.wall.get_rotation_euler() + [0, 0, self.wall.get_rotation_euler()[0]*3])
-            wall3.set_location([-self.length_x/2, 0, 0])
-            wall3.enable_rigidbody(active=False, collision_shape="COMPOUND")
-            self.walls.append(wall3)
+            self.planes = [
+                bproc.object.create_primitive('PLANE', scale=[bin_shape[0], 2, 1], location=[0, bin_shape[1]/2, 0], rotation=[-1.570796, 0, 0]),
+               bproc.object.create_primitive('PLANE', scale=[bin_shape[0], 2, 1], location=[0, -bin_shape[1]/2, 0], rotation=[1.570796, 0, 0]),
+               bproc.object.create_primitive('PLANE', scale=[2, bin_shape[1], 1], location=[bin_shape[0]/2,0 , 0], rotation=[0, -1.570796, 0]),
+               bproc.object.create_primitive('PLANE', scale=[2,bin_shape[1], 1], location=[-bin_shape[0]/2, 0, 0], rotation=[0, 1.570796, 0])
+            ]
+            for wall in self.planes:
+                wall.enable_rigidbody(active=False, collision_shape="COMPOUND")
+                wall.build_convex_decomposition_collision_shape(vhacd_path, cache_dir=cache_path)
+            
+        #def enable():
+            
+       # def disable():
+            
+            
+            
 
     def __init__(self, config: Config, args):
         bproc.init()
@@ -168,7 +165,10 @@ class Render:
         self.comps = list(map(lambda comp: self.Component(comp), config.components))
 
         # Load the bin with the environment
-        self.bin = self.Bin(config.bins[1])
+        self.bin = self.Bin(config.bins[0])
+        
+        # Load walls
+        self.walls = self.Wall([self.bin.length_x, self.bin.length_y, self.bin.length_z ])
 
 
     def get_all_comp_objs(self): 
@@ -279,14 +279,14 @@ class Render:
             bproc.object.sample_poses(
                 self.get_all_comp_objs(),
                 sample_pose_func=self.sample_pose,
-                objects_to_check_collisions=self.get_all_comp_objs() + [self.bin.obj],
+                objects_to_check_collisions=self.get_all_comp_objs() + [self.bin.obj] + self.walls.planes,
                 max_tries= 1000
             )
 
             # Run the physics simulation
             bproc.object.simulate_physics_and_fix_final_poses(
-                min_simulation_time=2,
-                max_simulation_time=3,
+                min_simulation_time=1,
+                max_simulation_time=2,
                 check_object_interval= 0.5,
                 object_stopped_location_threshold = 0.01,
                 object_stopped_rotation_threshold = 5,
@@ -298,15 +298,14 @@ class Render:
             # Change material of the bin
             if self.bin.random_color:
                bin_material = self.randomize_materials()
-               self.set_material(self.bin.obj, bin_material)
+               self.bin.obj.replace_materials(self.bin.obj, bin_material)
 
             # Randomize material and set component to that material.
-
             for comp in self.comps:
                 if comp.random_color:
                     comp_material = self.randomize_materials()
                     for comp in comp.obj_list:
-                        self.set_material(comp, comp_material)
+                        comp.replace_materials(comp_material)
 
             # Set a random background
             if self.random_background: 
@@ -315,10 +314,9 @@ class Render:
 
             # Make lighting
             self.randomize_light()
-
-            # Make walls invisible
-            for wall in self.bin.walls:
-                wall.hide(True)
+            
+            for wall in self.walls.planes:
+                wall.hide()
 
             # Make 4 random camera poses
             all_visible_comp = self.randomize_camera_poses(4)
@@ -347,7 +345,7 @@ class Render:
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--comp-amount-min',  nargs='?', default='1', help='The min amount of components that should be in the bin')
+    parser.add_argument('--comp-amount-min',  nargs='?', default='3', help='The min amount of components that should be in the bin')
     parser.add_argument('--comp-amount-max',  nargs='?', default='5', help='The max amount of components that can be in the bin')
     parser.add_argument('--number-of-runs',   nargs='?', default='1', help='The number of simulations you would like to do')
     parser.add_argument('--instance-num',     nargs='?', default='1', help='Give each component a different number')
