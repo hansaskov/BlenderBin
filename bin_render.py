@@ -150,7 +150,7 @@ class Render:
         # Create lighting
         self.light = bproc.types.Light()
 
-        # Load the component
+        # Load the components in a list
         self.comps = list(map(lambda comp: self.Component(comp), config.components))
 
         # Load the bin with the environment
@@ -168,9 +168,7 @@ class Render:
         # Define a function that samples random 6-DoF poses
         obj.set_rotation_euler(bproc.sampler.uniformSO3())
 
-        # Get dimensions of the component and set longest x,y,z dimension
-
-
+        # Calculate volume diffrence between components and bin
         total_volume = sum(list(map(lambda comp: comp.volume * len(comp.obj_list), self.comps)))
         box_volume = self.bin.length_x * self.bin.length_y * self.bin.length_z
 
@@ -265,10 +263,11 @@ class Render:
 
             # Sample the poses of all component objects above the ground without any collisions in-between
             bproc.object.sample_poses(
-                self.get_all_comp_objs(),
+                objects_to_sample= self.get_all_comp_objs(),
                 sample_pose_func=self.sample_pose,
                 objects_to_check_collisions=self.get_all_comp_objs() + [self.bin.obj] + self.walls.planes,
-                max_tries= 1000
+                max_tries= 300,
+                mode_on_failure='last_pose',
             )
 
             # Run the physics simulation
@@ -282,30 +281,30 @@ class Render:
                 solver_iters= 20,
             )
         
-            # Change material of the bin
+            # Randomize material for bin
             if self.bin.random_color:
-               bin_material = self.randomize_materials()
-               self.bin.obj.replace_materials(self.bin.obj, bin_material)
+               material = self.randomize_materials()
+               self.bin.obj.replace_materials(material)
 
-            # Randomize material and set component to that material.
+            # Randomize material for components.
             for comp in self.comps:
                 if comp.random_color:
-                    comp_material = self.randomize_materials()
+                    material = self.randomize_materials()
                     for comp in comp.obj_list:
-                        comp.replace_materials(comp_material)
+                        comp.replace_materials(material)
 
             # Set a random background
             if self.random_background: 
                 haven_hdri_path = bproc.loader.get_random_world_background_hdr_img_path_from_haven(haven_path)
                 bproc.world.set_world_background_hdr_img(haven_hdri_path)
 
-            # Make lighting
+            # Randomize lighting
             self.randomize_light()
 
-            # Make 4 random camera poses
+            # Make random camera poses
             all_visible_comp = self.randomize_camera_poses(4)
 
-            # render pipeline
+            # Render Pipeline
             data = bproc.renderer.render()
 
             # Save data in the bop format
@@ -329,11 +328,11 @@ class Render:
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--comp-amount-min',  nargs='?', default='2', help='The min amount of components that should be in the bin')
-    parser.add_argument('--comp-amount-max',  nargs='?', default='3', help='The max amount of components that can be in the bin')
+    parser.add_argument('--comp-amount-min',  nargs='?', default='3', help='The min amount of components that should be in the bin')
+    parser.add_argument('--comp-amount-max',  nargs='?', default='4', help='The max amount of components that can be in the bin')
     parser.add_argument('--number-of-runs',   nargs='?', default='1', help='The number of simulations you would like to do')
     parser.add_argument('--instance-num',     nargs='?', default='1', help='Give each component a different number')
-    parser.add_argument('--config-path',     nargs='?', default='config.json', help='filepath to configuration JSON file')
+    parser.add_argument('--config-path',      nargs='?', default='config.json', help='filepath to configuration JSON file')
     parser.add_argument('--random-bg', action=argparse.BooleanOptionalAction, default=True, help="Add a random background to the skybox from the haven benchmark")
     args = parser.parse_args()
 
