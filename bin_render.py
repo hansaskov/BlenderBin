@@ -63,7 +63,7 @@ class Render:
 
             # Scale comp if given in mm
             if (comp_config.mm_2_m):
-                self.obj.set_scale([1/2000, 1/2000, 1/2000])
+                self.obj.set_scale([1/1000, 1/1000, 1/1000])
 
             # Set obj variables
             self.obj.set_shading_mode('auto')
@@ -115,6 +115,16 @@ class Render:
             self.mm_2_m = bin_config.mm_2_m
             self.random_color = bin_config.random_color
 
+            self.wall = bproc.loader.load_obj('./3d_models/bins/angled_wall.obj')[0]
+            self.wall.set_scale([(1/self.length_y)/1000, 1/1000, 1/1000])
+            self.wall.enable_rigidbody(active=False, collision_shape="COMPOUND")
+            #self.wall.set_rotation_euler([90, 90, 0])
+            self.wall.set_location([0, -self.length_y/2, self.length_z])
+
+            wall1 = self.wall.duplicate()
+            wall1.set_rotation_euler([-90, 0, 90])
+
+
     def __init__(self, config: Config, args):
         bproc.init()
 
@@ -141,7 +151,7 @@ class Render:
         self.comps = list(map(lambda comp: self.Component(comp), config.components))
 
         # Load the bin with the environment
-        self.bin = self.Bin(config.bins[0])
+        self.bin = self.Bin(config.bins[1])
 
 
     def get_all_comp_objs(self): 
@@ -216,7 +226,7 @@ class Render:
 
             # Sample location
             location = bproc.sampler.shell(
-                center=[0, 0, 0.64],
+                center=[0, 0, 1.64],
                 radius_min=0.05,
                 radius_max=0.2,
                 elevation_min=-20,
