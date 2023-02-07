@@ -198,25 +198,17 @@ class Render:
 
         return material
 
-    def set_material(self, obj: MeshObject, material: Material):
-
-        materials = obj.get_materials()
-        if materials:
-            for index in range(len(materials)):
-                obj.set_material(index, material)
-        else:
-            obj.add_material(material)
-
-
     def randomize_camera_poses(self, amount):
         all_visible_comp = set()
 
         for i in range(amount):
 
-            # Calculate a point of interest with a random percentage of bin size offset from the center
-            poi = np.array([np.random.uniform(-0.3*self.bin.length_x, 0.3*self.bin.length_x), np.random.uniform(-0.3*self.bin.length_y, 0.3*self.bin.length_y), np.random.uniform(-0.1*self.bin.length_z, 0.3*self.bin.length_z)])
+            # Calculate a random point of interest
+            poi = np.array([np.random.uniform(-0.3*self.bin.length_x, 0.3*self.bin.length_x), 
+                            np.random.uniform(-0.3*self.bin.length_y, 0.3*self.bin.length_y), 
+                            np.random.uniform(-0.1*self.bin.length_z, 0.3*self.bin.length_z)])
 
-            # Sample location
+            # Sample random location
             location = bproc.sampler.shell(
                 center=[0, 0, 0.64],
                 radius_min=0.05,
@@ -238,11 +230,11 @@ class Render:
             sqrt_rays = round(math.sqrt(self.camera.height * self.camera.width) / 4)
             obj_visible = bproc.camera.visible_objects(cam2world, sqrt_rays)
 
-            # Filter to save showm components
+            # Filter to save shown components
             visible_comp = set(obj_visible) - (set(obj_visible) - set(self.get_all_comp_objs()) )
 
             # Add newly visible components to the list of all visible components
-            all_visible_comp = all_visible_comp | visible_comp
+            all_visible_comp = all_visible_comp & visible_comp
 
         return all_visible_comp
 
@@ -288,7 +280,7 @@ class Render:
                 if comp.random_color:
                     comp_material = self.randomize_materials()
                     for comp in comp.obj_list:
-                        self.set_material(comp, comp_material)
+                        comp.replace_materials(comp_material)
 
             
 
@@ -331,10 +323,11 @@ if __name__ == "__main__":
     parser.add_argument('--comp-amount-max',  nargs='?', default='5', help='The max amount of components that can be in the bin')
     parser.add_argument('--number-of-runs',   nargs='?', default='1', help='The number of simulations you would like to do')
     parser.add_argument('--instance-num',     nargs='?', default='1', help='Give each component a different number')
+    parser.add_argument('--config-path',     nargs='?', default='config.json', help='filepath to configuration JSON file')
     parser.add_argument('--random-bg', action=argparse.BooleanOptionalAction, default=True, help="Add a random background to the skybox from the haven benchmark")
     args = parser.parse_args()
 
-    config = Config('config.json')
+    config = Config(args.config_path)
 
     rend = Render(config, args)
     rend.run()
