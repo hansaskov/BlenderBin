@@ -114,16 +114,32 @@ class Render:
             self.path = bin_config.path
             self.mm_2_m = bin_config.mm_2_m
             self.random_color = bin_config.random_color
+            
+            self.walls = []
 
             self.wall = bproc.loader.load_obj('./3d_models/bins/angled_wall.obj')[0]
-            self.wall.set_scale([(1/self.length_y)/1000, 1/1000, 1/1000])
+            self.wall.set_scale([self.length_y, 1/1000, 1/100])
             self.wall.enable_rigidbody(active=False, collision_shape="COMPOUND")
-            #self.wall.set_rotation_euler([90, 90, 0])
-            self.wall.set_location([0, -self.length_y/2, self.length_z])
-
+            self.wall.set_location([0, -self.length_y/2, 0])
+            self.walls.append(self.wall)
+        
             wall1 = self.wall.duplicate()
-            wall1.set_rotation_euler([-90, 0, 90])
+            wall1.set_rotation_euler(self.wall.get_rotation_euler() + [0, 0, self.wall.get_rotation_euler()[0]*2])
+            wall1.set_location([0, self.length_y/2, 0])
+            wall1.enable_rigidbody(active=False, collision_shape="COMPOUND")
+            self.walls.append(wall1)
 
+            wall2 = self.wall.duplicate()
+            wall2.set_rotation_euler(self.wall.get_rotation_euler() + [0, 0, self.wall.get_rotation_euler()[0]])
+            wall2.set_location([self.length_x/2, 0, 0])
+            wall2.enable_rigidbody(active=False, collision_shape="COMPOUND")
+            self.walls.append(wall2)
+
+            wall3 = self.wall.duplicate()
+            wall3.set_rotation_euler(self.wall.get_rotation_euler() + [0, 0, self.wall.get_rotation_euler()[0]*3])
+            wall3.set_location([-self.length_x/2, 0, 0])
+            wall3.enable_rigidbody(active=False, collision_shape="COMPOUND")
+            self.walls.append(wall3)
 
     def __init__(self, config: Config, args):
         bproc.init()
@@ -298,14 +314,16 @@ class Render:
                     for comp in comp.obj_list:
                         self.set_material(comp, comp_material)
 
-            
-
             # Set a random background
             haven_hdri_path = bproc.loader.get_random_world_background_hdr_img_path_from_haven(haven_path)
             bproc.world.set_world_background_hdr_img(haven_hdri_path)
 
             # Make lighting
             self.randomize_light()
+
+            # Make walls invisible
+            for wall in self.bin.walls:
+                wall.hide(True)
 
             # Make 4 random camera poses
             all_visible_comp = self.randomize_camera_poses(4)
@@ -334,8 +352,8 @@ class Render:
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--comp-amount-min',  nargs='?', default='1', help='The min amount of components that should be in the bin')
-    parser.add_argument('--comp-amount-max',  nargs='?', default='20', help='The max amount of components that can be in the bin')
+    parser.add_argument('--comp-amount-min',  nargs='?', default='10', help='The min amount of components that should be in the bin')
+    parser.add_argument('--comp-amount-max',  nargs='?', default='30', help='The max amount of components that can be in the bin')
     parser.add_argument('--number-of-runs',   nargs='?', default='5', help='The number of simulations you would like to do')
     parser.add_argument('--instance-num',     nargs='?', default='2', help='Give each component a different number')
     args = parser.parse_args()
