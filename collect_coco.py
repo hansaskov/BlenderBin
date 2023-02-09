@@ -2,8 +2,8 @@ import os
 import numpy as np
 import json
 
-bop_path = '/home/robotlab/Desktop/HAOV/DragonFeeding/Simulation/data'
-dataset_name = 'body'
+bop_path = './data'
+dataset_name = '16'
 split = 'train'
 split_type = 'pbr'
 coco_filename = "scene_gt_coco.json"

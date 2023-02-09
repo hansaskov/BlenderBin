@@ -6,6 +6,7 @@ import os
 import math
 import json
 import random
+import colorsys
 
 from blenderproc.python.types.MeshObjectUtility import MeshObject
 from blenderproc.python.types.MaterialUtility import Material
@@ -182,7 +183,7 @@ class Render:
             ], [
                 self.bin.length_x/2.2,
                 self.bin.length_y/2.2,
-                self.bin.length_z * 5 * volume_frac 
+                self.bin.length_z * 10 * volume_frac 
             ]
         ))
 
@@ -201,7 +202,8 @@ class Render:
         # Make a random material
         material = bproc.material.create("random color")
 
-        r, g, b = np.random.uniform(0.1, 0.9, 3)
+        h, l, s = np.random.uniform(0.1, 0.9, 3)
+        r, g, b = colorsys.hls_to_rgb(h, l, s)
 
         material.set_principled_shader_value("Base Color", [r, g, b, 1])
         material.set_principled_shader_value("Roughness", np.random.uniform(1, 10.0))
