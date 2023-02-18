@@ -56,21 +56,23 @@ class Scene:
         comps = [Element.from_dict(c) for c in comps_dict]
         bin = Element.from_dict(bin_dict)
         return Scene(config_path, comps, bin)
-    
+
+
     def save_to_folder(self, folder_path):
-        d = self.to_dict()
+        scene_dict = self.to_dict()
         
         # Create unique file name        
-        d_str = json.dumps(d, sort_keys=True).encode('utf-8')
+        d_str = json.dumps(scene_dict, sort_keys=True).encode('utf-8')
         hash = hashlib.sha1(d_str).hexdigest()
         filename = hash[:8] + ".json"
         
         file_path = folder_path + "/" + filename
         
         with open(file_path, 'w') as f:
-            json.dump(d, f, indent=4)
-
-def load_from_file(file_path):
-    with open(file_path, 'r') as f:
-        scene_dict = json.load(f)
-    return Scene.from_dict(scene_dict)
+            json.dump(scene_dict, f, indent=4)
+        
+    @staticmethod
+    def load_from_file(file_path):
+        with open(file_path, 'r') as f:
+            scene_dict = json.load(f)
+        return Scene.from_dict(scene_dict)

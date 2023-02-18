@@ -10,7 +10,6 @@ import os
 myDir = os.getcwd()
 sys.path.append(myDir)
 
-
 from Scene import Scene
 from Entity import Component, Bin
 
@@ -20,7 +19,6 @@ from blenderproc.python.types.MaterialUtility import Material
 # Global variables
 vhacd_path = 'resources/vhacd'
 cache_path = vhacd_path + '/decomp_cache'
-
 
 class Walls:
     
@@ -60,10 +58,12 @@ class Simulator:
         
         self.bin = self.bins[0]
         self.walls = Walls()
-
-        for entities in self.components + [ self.bin ] :
-            entities.load()
-                
+        
+        self.bin.load(build_convex=True, downsample_mesh=True)
+        
+        for entities in self.components:
+            entities.load(build_convex=True, downsample_mesh= True)
+                  
     def sample_pose(self, obj: MeshObject):
         # Get dimensions of bin
         x, y, z =  (self.bin.dimensions)
@@ -87,15 +87,15 @@ class Simulator:
     
     def get_scene(self):
         comps = [ comp.get_element() for comp in self.components ]
-        bin = self.bin.get_element() 
+        bin = self.bin.to_element() 
         
         return Scene(self.config_path, comps, bin)
         
-    def run(self, comp_amount, use_walls = False):
+    def run(self, amount_of_components, use_walls = False):
         
         # Add components to list
         comp = random.choice(self.components)
-        comp.add_to_obj_list(comp_amount - self.get_amount_of_components())
+        comp.add_to_obj_list(max= amount_of_components)
         
         # Set walls for sampling
         self.walls.set_pos(self.bin.dimensions)
@@ -136,9 +136,9 @@ class Simulator:
         )  
         
 parser = argparse.ArgumentParser()
-parser.add_argument('--comp-amount-min',  nargs='?', default='3', help='The min amount of components that should be in the bin')
-parser.add_argument('--comp-amount-max',  nargs='?', default='4', help='The max amount of components that can be in the bin')
-parser.add_argument('--number-of-runs',   nargs='?', default='1', help='The number of simulations you would like to do')
+parser.add_argument('--comp-amount-min',  nargs='?', default='1', help='The min amount of components that should be in the bin')
+parser.add_argument('--comp-amount-max',  nargs='?', default='15', help='The max amount of components that can be in the bin')
+parser.add_argument('--number-of-runs',   nargs='?', default='25', help='The number of simulations you would like to do')
 parser.add_argument('--config-path',      nargs='?', default='config.json', help='filepath to configuration JSON file')
 args = parser.parse_args()
 
@@ -155,5 +155,3 @@ for comp_amount in comp_amount_list:
     simulator.run(comp_amount, False)
     scene = simulator.get_scene()
     scene.save_to_folder("./resources/simulations/queue")
-
-scene = Scene(args.config_path, simulator.components, simulator.bin)

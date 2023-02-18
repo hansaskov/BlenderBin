@@ -1,27 +1,24 @@
 { 
-    "comp": [
+    "components": [
         {
             "name" : "coffee_cup",
-            "path" : "./3d_models/comp/coffee_cup.obj",
-            "random_color" : false,
+            "path" : "./3d_models/comp/coffee_cup.ply",
+            "random_color" : true,
+            "mm_2_m": true
+        },
+        {
+            "name" : "ape",
+            "path" : "./3d_models/comp/ape.obj",
+            "random_color" : true,
             "mm_2_m": true
         }
     ],
 
     "bins" :  [
         {
-            "path" : "./3d_models/bins/square_box.obj",
-            "random_color" : false, 
-            "mm_2_m": true,
-            "dimensions": [
-                176,
-                156,
-                100
-            ]
-        },
-        {
+            "name" : "box_bin",
             "path" : "./3d_models/bins/boxbin.obj",
-            "random_color" : false, 
+            "random_color" : true, 
             "mm_2_m": true,
             "dimensions": [
                 420,
