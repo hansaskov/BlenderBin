@@ -23,19 +23,22 @@ For the bin_render.py script, download the Haven background:
 ``` bash
 blenderproc download haven resources/blenderproc/haven
 ```
-For the bop_render.py script, download the CC_Textures:
 
-``` bash
-blenderproc download cc_textures resources/blenderproc/cctextures
-```
 Note that these commands may take some time to complete. It is recommended to run them in separate terminals.
 
 # Running the Render
 
-To test the program, run the following command using the default component and bin:
+First, start by simulating scenes in the render.
+``` bash
+blenderproc run bin_simulator.py
+```
+
+In another console start the render
 ``` bash
 blenderproc run bin_render.py
 ```
+
+When a scene has been simulated four imges are rendered of the scene. The scenes are also saved in a folder for easy reuse with other parameters. Check out the resources/simulations folder. 
 
 To adjust runtime settings, such as the number of components to simulate and the number of runs, you can use the following arguments:
 
@@ -44,7 +47,6 @@ blenderproc run bin_render.py \
 --comp-amount-min 1 \
 --comp-amount-max 10 \
 --number-of-runs 10 \
---instance-num 1 \
 ```
 
 
