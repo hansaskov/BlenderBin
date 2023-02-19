@@ -94,7 +94,7 @@ class Simulator:
         
         # Add components to list
         comp = random.choice(self.components)
-        comp.set_obj_list_length(amount= amount_of_components)
+        comp.add_to_obj_list(max= amount_of_components)
         
         # Set walls for sampling
         self.walls.set_pos(self.bin.dimensions)

@@ -171,6 +171,10 @@ class Render:
             
             # Reset sim and restart.
             bproc.utility.reset_keyframes()
+        
+        # Reset location. 
+        for obj in self.get_all_comp_objs():
+            obj.set_location([1000,1000,100])
 
 
 if __name__ == "__main__":
@@ -213,7 +217,7 @@ if __name__ == "__main__":
                 scene = Scene_file.load_from_file(tmp_dir + file)
 
                 # Render the scene
-                rend.run(scene, img_amount=1)
+                rend.run(scene)
 
                 # Move the file to the complete directory
                 shutil.move(tmp_dir + file, complete_dir + file)

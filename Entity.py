@@ -72,32 +72,13 @@ class Component():
         # Dreate new list of dublicate objects
         self.obj_list: list[MeshObject] = [self.obj]
 
-    def add_to_obj_list(self, amount: int):
-        for i in range(amount):
-            self.obj_list.append(self.obj.duplicate())
-            
-    def remove_from_obj_list(self, amount: int):
-        # make two lists og objects, one to keep and one to delete. 
-        keep_obj = self.obj_list[amount:]
-        remove_obj = self.obj_list[:amount] 
+    def add_to_obj_list(self, max: int):
         
-        
-        for obj in remove_obj:
-            print(obj.blender_obj)
-            obj.delete()
-        # Set the list to objets we are keeping
-        self.obj_list = keep_obj
-        self.obj = keep_obj[0]
-        
-        
-    def set_obj_list_length(self, amount: int):
-        
-        difference = amount - len(self.obj_list)
-
+        difference = max - len(self.obj_list)
         if difference > 0:
-            self.add_to_obj_list(amount= abs(difference))
-        elif difference < 0:
-            self.remove_from_obj_list(amount= abs(difference))
+            for i in range(difference):
+                self.obj_list.append(self.obj.duplicate())
+            
                         
     def get_element(self):
         name = self.name
@@ -107,7 +88,7 @@ class Component():
     
     def from_element(self, positions: List[Position]):
         # Set the component amount
-        self.set_obj_list_length(amount= len(positions))
+        self.add_to_obj_list(max= len(positions))
         
         # Set position of all new objects. 
         for (position, obj) in zip(positions, self.obj_list):
