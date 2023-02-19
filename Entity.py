@@ -5,7 +5,11 @@ import os
 import hashlib
 from typing import List
 from blenderproc.python.types.MeshObjectUtility import MeshObject
-from Scene import Position, Element
+from blenderproc.api.object import delete_multiple
+from scene_file import Position, Element
+from dataclasses import dataclass
+from config_file import Component_data, Bin_data, Config_file
+import time
 
 # Reduce vertecies in mesh for simulation
 def choose_mesh( input_file: str, cache_folder: str = "./resources/obj_cache/", num_of_triangles: int = 8192):
@@ -35,14 +39,14 @@ def choose_mesh( input_file: str, cache_folder: str = "./resources/obj_cache/", 
     o3d.io.write_triangle_mesh(cached_file, mesh_out)
     return cached_file
       
-    
+@dataclass
 class Component():
-    def __init__(self, data: dict):
-        self.name = str(data["name"])
-        self.path = str(data["path"])
-        self.random_color = bool(data["random_color"])
-        self.mm_2_m = bool(data["mm_2_m"])
-                
+    def __init__(self, name: str, path: str, random_color: bool, mm_2_m: bool):
+        self.name = name
+        self.path = path
+        self.random_color = random_color
+        self.mm_2_m = mm_2_m
+      
     def load(self, build_convex: bool, downsample_mesh = False, ): 
         
         # Downsample mesh if necesarry
@@ -68,15 +72,32 @@ class Component():
         # Dreate new list of dublicate objects
         self.obj_list: list[MeshObject] = [self.obj]
 
-    def add_to_obj_list(self, max: int):
-        # Check if new components needs to be added
-        length = len(self.obj_list)
-    
-        if length >= max:
-            return
-        
-        for i in range(max - length):
+    def add_to_obj_list(self, amount: int):
+        for i in range(amount):
             self.obj_list.append(self.obj.duplicate())
+            
+    def remove_from_obj_list(self, amount: int):
+        # make two lists og objects, one to keep and one to delete. 
+        keep_obj = self.obj_list[amount:]
+        remove_obj = self.obj_list[:amount] 
+        
+        
+        for obj in remove_obj:
+            print(obj.blender_obj)
+            obj.delete()
+        # Set the list to objets we are keeping
+        self.obj_list = keep_obj
+        self.obj = keep_obj[0]
+        
+        
+    def set_obj_list_length(self, amount: int):
+        
+        difference = amount - len(self.obj_list)
+
+        if difference > 0:
+            self.add_to_obj_list(amount= abs(difference))
+        elif difference < 0:
+            self.remove_from_obj_list(amount= abs(difference))
                         
     def get_element(self):
         name = self.name
@@ -85,22 +106,21 @@ class Component():
         return Element(name, pos)
     
     def from_element(self, positions: List[Position]):
-        self.add_to_obj_list(max = len(positions))
+        # Set the component amount
+        self.set_obj_list_length(amount= len(positions))
         
+        # Set position of all new objects. 
         for (position, obj) in zip(positions, self.obj_list):
             obj.set_location(position.location)
             obj.set_rotation_euler(position.orientation)
             
-    
-            
-            
 class Bin():
-    def __init__(self, data: dict):
-        self.name = str(data["name"])
-        self.path = str(data["path"])
-        self.random_color = bool(data["random_color"])
-        self.mm_2_m = bool(data["mm_2_m"])
-        self.dimensions = list(data["dimensions"])
+    def __init__(self, name: str, path: str, random_color: bool, mm_2_m: bool, dimensions: List[float]):
+        self.name = name
+        self.path = path
+        self.random_color = random_color
+        self.mm_2_m = mm_2_m
+        self.dimensions = dimensions
 
         if self.mm_2_m:
                 self.dimensions =np.multiply(self.dimensions, 1 / 1000)
@@ -138,4 +158,3 @@ class Bin():
         self.obj.set_location(position.location)
         self.obj.set_rotation_euler(position.orientation)
         
-       

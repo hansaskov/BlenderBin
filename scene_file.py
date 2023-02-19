@@ -2,42 +2,42 @@ import json
 from typing import List
 import hashlib
 
-# location and orientation are 3d vectors representing x,y,z and rx, ry, rz respectively
+from dataclasses import dataclass, asdict
+
+
+@dataclass    
 class Position:
-    def __init__(self, location: List[float], orientation: List[float]):
-        self.location = location
-        self.orientation = orientation
-        
+    location: List[float]
+    orientation: List[float]
+
     def to_dict(self):
-        return {
-            "location": self.location,
-            "orientation": self.orientation
-        }
+        return asdict(self)
 
-    @staticmethod
-    def from_dict(d: dict):
-        return Position(d["location"], d["orientation"])
+    @classmethod
+    def from_dict(cls, dict_obj):
+        return cls(**dict_obj)
 
-class Element:
-   def __init__(self, name: str, pos: List[Position]):
-       self.name = name
-       self.pos = pos
-       
-   def to_dict(self):
+@dataclass
+class Element: 
+    name: str
+    pos: List[Position]
+
+    def to_dict(self):
        pos_dict = [p.to_dict() for p in self.pos]
        return {
            "name": self.name,
            "pos": pos_dict
        }
-   @staticmethod
-   def from_dict(d: dict):
+       
+    @staticmethod
+    def from_dict(d: dict):
         return Element(d["name"], [Position.from_dict(p) for p in d["pos"]])
 
-class Scene: 
-    def __init__(self, config_path: str, comps: List[Element], bin: Element):
-        self.config_path = config_path
-        self.comps = comps
-        self.bin = bin
+@dataclass
+class Scene_file:
+    config_path: str
+    comps: List[Element]
+    bin: Element
         
     def to_dict(self):
         comps_dict = [c.to_dict() for c in self.comps]
@@ -55,7 +55,7 @@ class Scene:
         
         comps = [Element.from_dict(c) for c in comps_dict]
         bin = Element.from_dict(bin_dict)
-        return Scene(config_path, comps, bin)
+        return Scene_file(config_path, comps, bin)
 
 
     def save_to_folder(self, folder_path):
@@ -75,4 +75,4 @@ class Scene:
     def load_from_file(file_path):
         with open(file_path, 'r') as f:
             scene_dict = json.load(f)
-        return Scene.from_dict(scene_dict)
+        return Scene_file.from_dict(scene_dict)

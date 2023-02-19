@@ -1,3 +1,4 @@
+
 import blenderproc as bproc
 import open3d as o3d
 import argparse
@@ -10,11 +11,13 @@ import os
 myDir = os.getcwd()
 sys.path.append(myDir)
 
-from Scene import Scene
+from scene_file import Scene_file
+from config_file import Config_file
 from Entity import Component, Bin
 
 from blenderproc.python.types.MeshObjectUtility import MeshObject
 from blenderproc.python.types.MaterialUtility import Material
+from typing import List
 
 # Global variables
 vhacd_path = 'resources/vhacd'
@@ -45,16 +48,12 @@ class Walls:
         self.set_pos([-1000, -1000, 0])
 
 class Simulator:
-    def __init__(self, args: argparse.Namespace):
+    def __init__(self, config_path: str, components: List[Component], bins: List[Bin]):
         bproc.init()
         
-        self.config_path = str(args.config_path)
-        
-        with open(self.config_path, 'r') as f:
-            data = json.load(f)
-                  
-        self.components = list(map(lambda comp: Component(comp), data["components"]))
-        self.bins = list(map(lambda bin: Bin(bin), data["bins"]))
+        self.config_path = config_path   
+        self.components = components
+        self.bins = bins
         
         self.bin = self.bins[0]
         self.walls = Walls()
@@ -89,13 +88,13 @@ class Simulator:
         comps = [ comp.get_element() for comp in self.components ]
         bin = self.bin.to_element() 
         
-        return Scene(self.config_path, comps, bin)
+        return Scene_file(self.config_path, comps, bin)
         
     def run(self, amount_of_components, use_walls = False):
         
         # Add components to list
         comp = random.choice(self.components)
-        comp.add_to_obj_list(max= amount_of_components)
+        comp.set_obj_list_length(amount= amount_of_components)
         
         # Set walls for sampling
         self.walls.set_pos(self.bin.dimensions)
@@ -142,7 +141,14 @@ parser.add_argument('--number-of-runs',   nargs='?', default='25', help='The num
 parser.add_argument('--config-path',      nargs='?', default='config.json', help='filepath to configuration JSON file')
 args = parser.parse_args()
 
-simulator = Simulator(args= args)
+
+config_file = str(args.config_path)
+
+config = Config_file.load_from_file(config_file)
+components = list(map(lambda comp_data: Component(name= comp_data.name, path= comp_data.path, random_color= comp_data.random_color, mm_2_m= comp_data.mm_2_m) , config.components))
+bins = list(map(lambda comp_data: Bin(name= comp_data.name, path= comp_data.path, random_color= comp_data.random_color, mm_2_m= comp_data.mm_2_m, dimensions=comp_data.dimensions) , config.bins))
+
+simulator = Simulator(config_path= config_file, components=components, bins=bins)
 
 low = int(args.comp_amount_min)
 high= int(args.comp_amount_max)
