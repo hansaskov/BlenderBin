@@ -182,7 +182,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--config-path',      nargs='?', default='config.json', help='filepath to configuration JSON file')
     parser.add_argument('--random-bg', action=argparse.BooleanOptionalAction, default=True, help="Add a random background to the skybox from the haven benchmark")
-    parser.add_argument('--render-amount', nargs='?', default=4, help="Amount of images per scene")
+    parser.add_argument('--img-amount', nargs='?', default=4, help="Amount of images per scene")
     args = parser.parse_args()
 
     # Create an instance of the Renderer class
@@ -202,11 +202,9 @@ if __name__ == "__main__":
     for dir in [tmp_dir, complete_dir, queue_dir]:
         if not os.path.exists(dir):
             os.makedirs(dir)
-    
 
     try:
         while True:
-            print("Looping...")
             files = os.listdir(queue_dir)
 
             if not files:
@@ -216,8 +214,6 @@ if __name__ == "__main__":
                 print("Scene found! Processing...")
                 file = files[0]
 
-
-
                 # Move the file to the tmp directory
                 shutil.move(queue_dir + file, tmp_dir + file)
 
@@ -225,7 +221,7 @@ if __name__ == "__main__":
                 scene = Scene_file.load_from_file(tmp_dir + file)
 
                 # Render the scene
-                rend.run(scene)
+                rend.run(scene, img_amount=args.img_amount, random_background= args.random_bg)
 
                 # Move the file to the complete directory
                 shutil.move(tmp_dir + file, complete_dir + file)
