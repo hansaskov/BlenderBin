@@ -1,7 +1,5 @@
 # Introduction
-<a target="_blank" href="https://colab.research.google.com/github/https://colab.research.google.com/github/hansaskov/BlenderBin/blob/master/BlenderBin_quickstart.ipynb">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-</a>
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hansaskov/BlenderBin/blob/master/BlenderBin_quickstart.ipynb)
 
 Simulate many objects falling in a bin and create high detailed annotated images with the BlenderBin repository.
 
