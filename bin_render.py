@@ -203,13 +203,15 @@ if __name__ == "__main__":
         if not os.path.exists(dir):
             os.makedirs(dir)
 
+    i = 0
     try:
-        while True:
+        while i < 6:
             files = os.listdir(queue_dir)
 
             if not files:
                 print("No Scenes to render, waiting...")
-                time.sleep(10)
+                i = i + 1
+                time.sleep(5)
             else:
                 print("Scene found! Processing...")
                 file = files[0]
@@ -225,7 +227,9 @@ if __name__ == "__main__":
 
                 # Move the file to the complete directory
                 shutil.move(tmp_dir + file, complete_dir + file)
+                i = 0
 
+        print("Timeout, no new scenes to render for 30 seconds")
 
     except KeyboardInterrupt:
         print("\n Render stopped by user")
