@@ -1,9 +1,7 @@
 
 import blenderproc as bproc
-import open3d as o3d
 import argparse
 import numpy as np
-import json
 import random
 import sys
 import os
@@ -16,7 +14,8 @@ from config_file import Config_file
 from Entity import Component, Bin
 
 from blenderproc.python.types.MeshObjectUtility import MeshObject
-from blenderproc.python.types.MaterialUtility import Material
+
+
 from typing import List
 
 # Global variables
@@ -48,10 +47,7 @@ class Walls:
         self.set_pos([-1000, -1000, 0])
 
 class Simulator:
-    def __init__(self, config_path: str, components: List[Component], bins: List[Bin]):
-        bproc.init()
-        bproc.api.renderer.set_render_devices(use_only_cpu=True)
-        
+    def __init__(self, config_path: str, components: List[Component], bins: List[Bin]):       
         self.config_path = config_path   
         self.components = components
         self.bins = bins
