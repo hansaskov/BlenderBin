@@ -50,6 +50,7 @@ class Walls:
 class Simulator:
     def __init__(self, config_path: str, components: List[Component], bins: List[Bin]):
         bproc.init()
+        bproc.api.renderer.set_render_devices(use_only_cpu=True)
         
         self.config_path = config_path   
         self.components = components
