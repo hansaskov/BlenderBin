@@ -197,6 +197,12 @@ if __name__ == "__main__":
     queue_dir = "./resources/simulations/queue/"
     tmp_dir = "./resources/simulations/tmp/"
     complete_dir = "./resources/simulations/complete/"
+    
+    # Create the folder if it does not exist
+    for dir in [tmp_dir, complete_dir, queue_dir]:
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+    
 
     try:
         while True:
@@ -209,6 +215,8 @@ if __name__ == "__main__":
             else:
                 print("Scene found! Processing...")
                 file = files[0]
+
+
 
                 # Move the file to the tmp directory
                 shutil.move(queue_dir + file, tmp_dir + file)

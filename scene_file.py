@@ -1,4 +1,5 @@
 import json
+import os
 from typing import List
 import hashlib
 
@@ -65,6 +66,10 @@ class Scene_file:
         d_str = json.dumps(scene_dict, sort_keys=True).encode('utf-8')
         hash = hashlib.sha1(d_str).hexdigest()
         filename = hash[:8] + ".json"
+        
+       # Create the folder if it does not exist 
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
         
         file_path = folder_path + "/" + filename
         
