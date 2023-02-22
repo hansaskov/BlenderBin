@@ -26,22 +26,23 @@ output_dir = "data"
 
 class Render:
                            
-    def __init__(self, components: List[Component], bins: List[Bin], camera: Camera_data):
+    def __init__(self, config: Config_file):
         bproc.init()
         
-        self.camera = camera
-        self.components = components
-        self.bins = bins
+        self.config_file = config
+        self.camera = config.camera
+        self.components = list(map(lambda comp_data: Component(name= comp_data.name, obj_id= comp_data.obj_id, path= comp_data.path, random_color= comp_data.random_color, mm_2_m= comp_data.mm_2_m) , config.components))
+        self.bins = list(map(lambda bin_data: Bin(name= bin_data.name, path= bin_data.path, random_color= bin_data.random_color, mm_2_m= bin_data.mm_2_m, dimensions=bin_data.dimensions) , config.bins))
         self.bin = self.bins[0]
 
         K = [
-            [camera.fx, 0, camera.cx],
-            [0, camera.fy, camera.cy],
+            [self.camera.fx, 0, self.camera.cx],
+            [0, self.camera.fy, self.camera.cy],
             [0, 0, 1]
         ]
         
         self.light = bproc.types.Light()
-        bproc.camera.set_intrinsics_from_K_matrix(K=K, image_height=camera.height, image_width=camera.width)
+        bproc.camera.set_intrinsics_from_K_matrix(K=K, image_height=self.camera.height, image_width=self.camera.width)
         bproc.renderer.enable_depth_output(activate_antialiasing=False)
         bproc.renderer.set_max_amount_of_samples(50)
         
@@ -99,8 +100,9 @@ class Render:
             elevation_max=90,
             uniform_volume=True
         )
+        
         # calculate rotation towards point of intrest
-        rotation_matrix = bproc.camera.rotation_from_forward_vec( poi - location, inplane_rot=np.random.uniform(-0.7854, 0.7854))
+        rotation_matrix = bproc.camera.rotation_from_forward_vec( poi - location, inplane_rot= np.random.uniform(-0.7854, 0.7854))
 
         # Make tansformation matrix from location (x, y, z) and rotation matrix
         cam2world = bproc.math.build_transformation_mat(location, rotation_matrix)
@@ -111,8 +113,12 @@ class Render:
         # Compute raycasting to only show visible objects
         sqrt_rays = round(math.sqrt(self.camera.height * self.camera.width) / 4)
         obj_visible = bproc.camera.visible_objects(cam2world, sqrt_rays)
+        
+        # Filter visible components
+        all_comps = set(self.get_all_comp_objs())
+        comp_visible = obj_visible.intersection(all_comps)
 
-        return obj_visible
+        return comp_visible
 
     def run(self, scene: Scene_file, random_background = True, img_amount = 4):
         
@@ -158,8 +164,8 @@ class Render:
             # Save data in the bop format
             bproc.writer.write_bop(
                 output_dir=os.path.join(output_dir),
-                dataset=self.components[0].name,
-                target_objects= all_visible_comp | set([self.bin.obj]),
+                dataset=self.config_file.dataset,
+                target_objects= all_visible_comp ,
                 colors=data['colors'],
                 depths=data['depth'],
                 color_file_format="JPEG",
@@ -188,10 +194,8 @@ if __name__ == "__main__":
     # Create an instance of the Renderer class
     
     config = Config_file.load_from_file(args.config_path)
-    components = list(map(lambda comp_data: Component(name= comp_data.name, path= comp_data.path, random_color= comp_data.random_color, mm_2_m= comp_data.mm_2_m) , config.components))
-    bins = list(map(lambda comp_data: Bin(name= comp_data.name, path= comp_data.path, random_color= comp_data.random_color, mm_2_m= comp_data.mm_2_m, dimensions=comp_data.dimensions) , config.bins))
-
-    rend = Render(components=components, bins=bins, camera=config.camera)
+    
+    rend = Render(config= config)
     
     # Define the relative paths of the directories
     queue_dir = "./resources/simulations/queue/"

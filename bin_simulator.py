@@ -142,8 +142,8 @@ args = parser.parse_args()
 config_file = str(args.config_path)
 
 config = Config_file.load_from_file(config_file)
-components = list(map(lambda comp_data: Component(name= comp_data.name, path= comp_data.path, random_color= comp_data.random_color, mm_2_m= comp_data.mm_2_m) , config.components))
-bins = list(map(lambda comp_data: Bin(name= comp_data.name, path= comp_data.path, random_color= comp_data.random_color, mm_2_m= comp_data.mm_2_m, dimensions=comp_data.dimensions) , config.bins))
+components = list(map(lambda comp_data: Component(name= comp_data.name, obj_id= comp_data.obj_id, path= comp_data.path, random_color= comp_data.random_color, mm_2_m= comp_data.mm_2_m) , config.components))
+bins = list(map(lambda bin_data: Bin(name= bin_data.name, path= bin_data.path, random_color= bin_data.random_color, mm_2_m= bin_data.mm_2_m, dimensions=bin_data.dimensions) , config.bins))
 
 simulator = Simulator(config_path= config_file, components=components, bins=bins)
 

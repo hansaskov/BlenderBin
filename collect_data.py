@@ -127,7 +127,7 @@ def get_folders(name, obj_path, box_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', nargs='?', default='16', help='Name of the component')
+    parser.add_argument('--dataset', nargs='?', default='blenderbin_test', help='Name of the component')
     parser.add_argument('--obj',  nargs='?', default='./3d_models/bop/tless/models_cad/obj_000016.ply', help='Path to the component object file')
     parser.add_argument('--box',  nargs='?', default='./3d_models/bins/square_box.obj', help='Path to the box object file')
     args = parser.parse_args()
