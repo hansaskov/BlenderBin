@@ -65,7 +65,7 @@ if __name__ == '__main__':
     print(scripts)
     
     
-    if 'mask' or 'masks' in scripts:
+    if 'mask' in scripts:
         masks.mask(par)
         
     if 'info' in scripts:

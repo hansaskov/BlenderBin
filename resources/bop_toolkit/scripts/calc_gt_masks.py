@@ -49,8 +49,7 @@ def mask(par):
     p['datasets_path'], p['dataset'], model_type)
 
   scene_ids = dataset_params.get_present_scene_ids(dp_split)
-  
-  print(scene_ids)
+
   for scene_id in scene_ids:
 
     # Load scene GT.
