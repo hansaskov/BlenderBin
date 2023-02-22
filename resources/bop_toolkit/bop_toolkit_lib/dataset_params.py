@@ -89,7 +89,7 @@ class DatasetParams():
       'hb': list(range(1, 34)),  # Full HB dataset.
       'ycbv': list(range(1, 22)),
       'hope': list(range(1, 29)),
-      self.par.name: self.par.get_object_ids()
+      self.par.name: self.par.obj_ids
     }[dataset_name]
 
     # ID's of objects with ambiguous views evaluated using the ADI pose error
@@ -108,7 +108,7 @@ class DatasetParams():
       'hb': [6, 10, 11, 12, 13, 14, 18, 24, 29],
       'ycbv': [1, 13, 14, 16, 18, 19, 20, 21],
       'hope': None,  # Not defined yet.
-      self.par.name: self.par.get_sym_ids()
+      self.par.name: self.par.sym_ids
     }[dataset_name]
 
     # T-LESS includes two types of object models, CAD and reconstructed.
@@ -378,10 +378,10 @@ class DatasetParams():
         p['azimuth_range'] = None  # Not calculated yet.
         p['elev_range'] = None  # Not calculated yet.
       
-      # Custom.
+      #################################  Custom. ############################################
     elif dataset_name == self.par.name:
       p['scene_ids'] = list(range(1, 50))
-      p['im_size'] = (int(self.par.height), int(self.par.width))
+      p['im_size'] = (int(self.par.width), int(self.par.height))
 
       if split == 'test':
         p['depth_range'] = None  # Not calculated yet.

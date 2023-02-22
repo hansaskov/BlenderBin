@@ -6,14 +6,14 @@
 import os
 import numpy as np
 
-from bop_toolkit_lib import dataset_params as dataset_p
+from bop_toolkit_lib.dataset_params import DatasetParams
 from bop_toolkit_lib import inout
 from bop_toolkit_lib import misc
 from bop_toolkit_lib import renderer
 from bop_toolkit_lib import visibility
 
 def mask(par):
-  dataset_params = dataset_p.DatasetParams(par)
+  dataset_params = DatasetParams(par)
   # PARAMETERS.
   ################################################################################
   p = {
@@ -49,6 +49,8 @@ def mask(par):
     p['datasets_path'], p['dataset'], model_type)
 
   scene_ids = dataset_params.get_present_scene_ids(dp_split)
+  
+  print(scene_ids)
   for scene_id in scene_ids:
 
     # Load scene GT.
@@ -80,6 +82,7 @@ def mask(par):
 
     # Add object models.
     for obj_id in dp_model['obj_ids']:
+      print(dp_model['model_tpath'])
       ren.add_object(obj_id, dp_model['model_tpath'].format(obj_id=obj_id))
 
     im_ids = sorted(scene_gt.keys())
