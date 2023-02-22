@@ -45,8 +45,9 @@ def choose_mesh( input_file: str, cache_folder: str = "./resources/obj_cache/", 
       
 @dataclass
 class Component():
-    def __init__(self, name: str, path: str, random_color: bool, mm_2_m: bool):
+    def __init__(self, name: str, obj_id: int, path: str, random_color: bool, mm_2_m: bool):
         self.name = name
+        self.obj_id = obj_id
         self.path = path
         self.random_color = random_color
         self.mm_2_m = mm_2_m
@@ -64,7 +65,7 @@ class Component():
             self.obj.build_convex_decomposition_collision_shape(vhacd_path='resources/vhacd', cache_dir='resources/vhacd/decomp_cache/')
         
         self.obj.set_shading_mode('auto')
-        self.obj.set_cp("category_id", self.name)
+        self.obj.set_cp("category_id", self.obj_id)
         
         if (self.mm_2_m):
             self.obj.set_scale([1/1000, 1/1000, 1/1000])
@@ -129,7 +130,7 @@ class Bin():
         
         self.obj.set_location([0, 0, 0])
         self.obj.set_shading_mode('auto')
-        self.obj.set_cp("category_id", self.name)
+        self.obj.set_cp("category_id", "bin")
         
 
     
