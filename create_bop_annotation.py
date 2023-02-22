@@ -33,8 +33,10 @@ class DataParams():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--config',  nargs='?', default='./config.json', help='The full path to the config file')
-    parser.add_argument('--run-num', help='The full path to the config file')
+    parser.add_argument('--scripts', help="Which script do you want to complete?, choose from \'mask\' \'info\' \'coco\' \'model\' or do more than one by seperating the input by a comma: \'mask, coco\' ")
     args = parser.parse_args()
+    
+    
     
     config = Config_file.load_from_file(args.config)
     
@@ -43,6 +45,8 @@ if __name__ == '__main__':
             os.makedirs(dir)
             for comp in config.components:
                 save_obj_as_ply(obj_path= comp.path, save_folder= dir, number=comp.obj_id)
+    
+    
     
     par = DataParams(
         data_path=  "data",
@@ -54,10 +58,21 @@ if __name__ == '__main__':
         height=     config.camera.height,
         width=      config.camera.width  
     )
-
-    if int(args.run_num) == 1:
+    
+    input = str(args.scripts)
+    scripts = input.split(',')
+    scripts = list(map(lambda s: s.strip(), scripts))
+    print(scripts)
+    
+    
+    if 'mask' or 'masks' in scripts:
         masks.mask(par)
-    elif int(args.run_num) == 2:
+        
+    if 'info' in scripts:
         info.info(par)
+        
+    if 'coco' in scripts:
         coco.coco(par)
+        
+    if 'model' in scripts:
         model.model(par)
