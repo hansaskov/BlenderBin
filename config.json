@@ -1,13 +1,16 @@
 { 
+    "dataset": "blenderbin_test",
     "components": [
         {
             "name" : "coffee_cup",
+            "obj_id": 1,
             "path" : "./3d_models/comp/coffee_cup.ply",
             "random_color" : true,
             "mm_2_m": true
         },
         {
             "name" : "ape",
+            "obj_id": 2,
             "path" : "./3d_models/comp/ape.obj",
             "random_color" : true,
             "mm_2_m": true
