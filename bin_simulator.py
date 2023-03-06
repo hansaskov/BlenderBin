@@ -9,9 +9,10 @@ import os
 myDir = os.getcwd()
 sys.path.append(myDir)
 
-from scene_file import Scene_file
-from config_file import Config_file
-from Entity import Component, Bin
+from config_schema.scene import Scene_data, save_scene_to_folder
+from config_schema.config import Config_data, load_config_from_file
+from entity.component import Component
+from entity.bin import Bin
 
 from blenderproc.python.types.MeshObjectUtility import MeshObject
 
@@ -47,10 +48,10 @@ class Walls:
         self.set_pos([-1000, -1000, 0])
 
 class Simulator:
-    def __init__(self, config_path: str, components: List[Component], bins: List[Bin]):       
+    def __init__(self, config_path: str, config_data: Config_data  ):       
         self.config_path = config_path   
-        self.components = components
-        self.bins = bins
+        self.components = list(map(lambda comp_data: Component(comp_data) , config_data['components']))
+        self.bins = list(map(lambda bin_data: Bin(bin_data) , config_data['bins']))        
         
         self.bin = self.bins[0]
         self.walls = Walls()
@@ -85,7 +86,7 @@ class Simulator:
         comps = [ comp.get_element() for comp in self.components ]
         bin = self.bin.to_element() 
         
-        return Scene_file(self.config_path, comps, bin)
+        return Scene_data(config_path= self.config_path, comps=comps, bin=bin)
         
     def run(self, amount_of_components, use_walls = False):
         
@@ -134,18 +135,14 @@ class Simulator:
 parser = argparse.ArgumentParser()
 parser.add_argument('--comp-amount-min',  nargs='?', default='1', help='The min amount of components that should be in the bin')
 parser.add_argument('--comp-amount-max',  nargs='?', default='15', help='The max amount of components that can be in the bin')
-parser.add_argument('--number-of-runs',   nargs='?', default='25', help='The number of simulations you would like to do')
+parser.add_argument('--number-of-runs',   nargs='?', default='5', help='The number of simulations you would like to do')
 parser.add_argument('--config-path',      nargs='?', default='config.json', help='filepath to configuration JSON file')
 args = parser.parse_args()
 
-
 config_file = str(args.config_path)
 
-config = Config_file.load_from_file(config_file)
-components = list(map(lambda comp_data: Component(name= comp_data.name, obj_id= comp_data.obj_id, path= comp_data.path, random_color= comp_data.random_color, mm_2_m= comp_data.mm_2_m) , config.components))
-bins = list(map(lambda bin_data: Bin(name= bin_data.name, path= bin_data.path, random_color= bin_data.random_color, mm_2_m= bin_data.mm_2_m, dimensions=bin_data.dimensions) , config.bins))
-
-simulator = Simulator(config_path= config_file, components=components, bins=bins)
+config_data = load_config_from_file(config_file)
+simulator = Simulator(config_path= config_file, config_data= config_data)
 
 low = int(args.comp_amount_min)
 high= int(args.comp_amount_max)
@@ -155,6 +152,6 @@ comp_amount_list = np.random.randint(low=low, high=high, size=size)
 comp_amount_list.sort()
 
 for comp_amount in comp_amount_list:
-    simulator.run(comp_amount, False)
+    simulator.run(comp_amount, use_walls= False)
     scene = simulator.get_scene()
-    scene.save_to_folder("./resources/simulations/queue")
+    save_scene_to_folder(scene= scene, folder_path= "./resources/simulations/queue")

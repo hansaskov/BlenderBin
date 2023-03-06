@@ -2,10 +2,10 @@ import os
 import numpy as np
 import json
 
-bop_path = './data'
-dataset_name = '16'
+bop_path = '/home/hansaskov/Desktop/code/mmdetection/data'
+dataset_name = 'icbin'
 split = 'train'
-split_type = 'pbr'
+split_type = None
 coco_filename = "scene_gt_coco.json"
 
 folder_path = bop_path + "/" + dataset_name + "/" + split 

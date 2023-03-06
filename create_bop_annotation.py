@@ -10,7 +10,7 @@ import resources.bop_toolkit.scripts.calc_gt_info as info
 import resources.bop_toolkit.scripts.calc_gt_coco as coco
 import resources.bop_toolkit.scripts.calc_model_info as model
 
-from config_file import Config_file
+from config_schema.config import Config_data
 
 import open3d as o3d
 
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     
     
     
-    config = Config_file.load_from_file(args.config)
+    config = Config_data.load_from_file(args.config)
     
     dir = "./data/" + config.dataset + "/models/"
     if not os.path.exists(dir):

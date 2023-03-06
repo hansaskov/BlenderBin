@@ -1,5 +1,5 @@
 { 
-    "dataset": "blenderbin_test",
+    "dataset_name": "blenderbin_test",
     "components": [
         {
             "name" : "coffee_cup",

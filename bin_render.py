@@ -15,9 +15,10 @@ import shutil
 myDir = os.getcwd()
 sys.path.append(myDir)
 
-from config_file import Camera_data, Config_file
-from scene_file import Scene_file
-from Entity import Component, Bin
+from config_schema.config import Camera_data, Config_data, load_config_from_file
+from config_schema.scene import Scene_data, load_scene_from_file
+from entity.component import Component
+from entity.bin import Bin
 from typing import List
 
 haven_path = "resources/blenderproc/haven"
@@ -26,23 +27,22 @@ output_dir = "data"
 
 class Render:
                            
-    def __init__(self, config: Config_file):
+    def __init__(self, config_data: Config_data):
         bproc.init()
-        
-        self.config_file = config
-        self.camera = config.camera
-        self.components = list(map(lambda comp_data: Component(name= comp_data.name, obj_id= comp_data.obj_id, path= comp_data.path, random_color= comp_data.random_color, mm_2_m= comp_data.mm_2_m) , config.components))
-        self.bins = list(map(lambda bin_data: Bin(name= bin_data.name, path= bin_data.path, random_color= bin_data.random_color, mm_2_m= bin_data.mm_2_m, dimensions=bin_data.dimensions) , config.bins))
+        self.config_data = config_data
+        self.camera = config_data["camera"]
+        self.components = [ Component(comp_data) for comp_data in config_data['components'] ] 
+        self.bins = [ Bin(bin_data) for bin_data in config_data["bins"] ]
         self.bin = self.bins[0]
 
         K = [
-            [self.camera.fx, 0, self.camera.cx],
-            [0, self.camera.fy, self.camera.cy],
+            [self.camera["fx"], 0, self.camera["cx"]],
+            [0, self.camera["fy"], self.camera["cy"]],
             [0, 0, 1]
         ]
         
         self.light = bproc.types.Light()
-        bproc.camera.set_intrinsics_from_K_matrix(K=K, image_height=self.camera.height, image_width=self.camera.width)
+        bproc.camera.set_intrinsics_from_K_matrix(K=K, image_height=self.camera["height"], image_width=self.camera["width"])
         bproc.renderer.enable_depth_output(activate_antialiasing=False)
         bproc.renderer.set_max_amount_of_samples(50)
         
@@ -111,7 +111,7 @@ class Render:
         bproc.camera.add_camera_pose(cam2world)
 
         # Compute raycasting to only show visible objects
-        sqrt_rays = round(math.sqrt(self.camera.height * self.camera.width) / 4)
+        sqrt_rays = round(math.sqrt(self.camera["height"] * self.camera["width"]) / 4)
         obj_visible = bproc.camera.visible_objects(cam2world, sqrt_rays)
         
         # Filter visible components
@@ -120,18 +120,18 @@ class Render:
 
         return comp_visible
 
-    def run(self, scene: Scene_file, random_background = True, img_amount = 4):
+    def run(self, scene: Scene_data, random_background = True, img_amount = 4):
         
         # set bin location
         for bin in self.bins:
-            if bin.name == scene.bin.name:
-                bin.from_element(scene.bin.pos[0])
+            if bin.name == scene["bin"]["name"]:
+                bin.from_element(scene["bin"]["pos"][0])
                 
         # Find matching components and set their position. 
-        for element in scene.comps:
+        for element in scene["comps"]:
             for comp in self.components:
-                if comp.name == element.name:
-                    comp.from_element(element.pos)
+                if comp.name == element["name"]:
+                    comp.from_element(element["pos"])
                     
         # Randomize material for bin
         if self.bin.random_color:
@@ -164,7 +164,7 @@ class Render:
             # Save data in the bop format
             bproc.writer.write_bop(
                 output_dir=os.path.join(output_dir),
-                dataset=self.config_file.dataset,
+                dataset=self.config_data["dataset_name"],
                 target_objects= all_visible_comp ,
                 colors=data['colors'],
                 depths=data['depth'],
@@ -193,9 +193,9 @@ if __name__ == "__main__":
 
     # Create an instance of the Renderer class
     
-    config = Config_file.load_from_file(args.config_path)
+    config = load_config_from_file(args.config_path)
     
-    rend = Render(config= config)
+    rend = Render(config_data= config)
     
     # Define the relative paths of the directories
     queue_dir = "./resources/simulations/queue/"
@@ -224,7 +224,7 @@ if __name__ == "__main__":
                 shutil.move(queue_dir + file, tmp_dir + file)
 
                 # Load the scene from the file
-                scene = Scene_file.load_from_file(tmp_dir + file)
+                scene = load_scene_from_file(tmp_dir + file)
 
                 # Render the scene
                 rend.run(scene, img_amount=args.img_amount, random_background= args.random_bg)
