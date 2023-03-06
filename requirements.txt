@@ -5,3 +5,4 @@ pypng
 imageio
 PyOpenGL
 open3d
+dacite
