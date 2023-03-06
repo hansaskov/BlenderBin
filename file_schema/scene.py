@@ -1,25 +1,30 @@
 import json
 import os
-from typing import TypedDict, List
+from dataclasses import dataclass, asdict
+from typing import  List
 import hashlib
+from dacite import from_dict
 
-class Position_data(TypedDict):
+@dataclass
+class PositionData():
     location: List[float]
     orientation: List[float]
-
-class Element_data(TypedDict): 
+    
+@dataclass
+class ElementData(): 
     name: str
-    pos: List[Position_data]
-
-class Scene_data(TypedDict):
+    pos: List[PositionData]
+    
+@dataclass
+class SceneData():
     config_path: str
-    comps: List[Element_data]
-    bin: Element_data
+    comps: List[ElementData]
+    bin: ElementData
         
-def save_scene_to_folder(scene: Scene_data, folder_path: str):
+def save_scene_to_folder(scene: SceneData, folder_path: str):
     
     # Create unique file name        
-    d_str = json.dumps(scene, sort_keys=True).encode('utf-8')
+    d_str = json.dumps(asdict(scene), sort_keys=True).encode('utf-8')
     hash = hashlib.sha1(d_str).hexdigest()
     filename = hash[:8] + ".json"
     
@@ -30,11 +35,12 @@ def save_scene_to_folder(scene: Scene_data, folder_path: str):
     file_path = folder_path + "/" + filename
     
     with open(file_path, 'w') as f:
-        json.dump(scene, f, indent=4)
+        data = asdict(scene)
+        json.dump(data, f, indent=4)
         
 
 def load_scene_from_file(file_path):
     with open(file_path, 'r') as f:
         scene_dict = json.load(f)
         
-    return Scene_data(scene_dict)
+    return from_dict(data_class=SceneData, data=scene_dict)

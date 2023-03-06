@@ -1,6 +1,14 @@
 import blenderproc as bproc
-from file_schema.scene import Scene_data, save_scene_to_folder
-from file_schema.config import Config_data, load_config_from_file
+
+import os
+import sys
+
+myDir = os.getcwd()
+sys.path.append(myDir)
+
+
+from file_schema.scene import SceneData, save_scene_to_folder
+from file_schema.config import ConfigData, load_config_from_file
 from blenderproc.python.types.MeshObjectUtility import MeshObject
 from entity.component import Component
 from entity.bin import Bin
@@ -37,10 +45,10 @@ class Walls:
         self.set_pos([-1000, -1000, 0])
 
 class Simulator:
-    def __init__(self, config_path: str, config_data: Config_data  ):       
+    def __init__(self, config_path: str, config_data: ConfigData  ):       
         self.config_path = config_path   
-        self.components = [Component(comp_data) for comp_data in config_data['components']]
-        self.bins = [Bin(bin_data) for bin_data in config_data['bins']]        
+        self.components = [Component(comp_data) for comp_data in config_data.components]
+        self.bins = [Bin(bin_data) for bin_data in config_data.bins]        
         
         self.bin = self.bins[0]
         self.walls = Walls()
@@ -75,7 +83,7 @@ class Simulator:
         comps = [ comp.to_element() for comp in self.components ]
         bin = self.bin.to_element() 
         
-        return Scene_data(config_path= self.config_path, comps=comps, bin=bin)
+        return SceneData(config_path= self.config_path, comps=comps, bin=bin)
         
     def run(self, amount_of_components, use_walls = False):
         

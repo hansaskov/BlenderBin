@@ -1,17 +1,17 @@
 import numpy as np
 import blenderproc.api.loader as loader
-from file_schema.config import Bin_data
-from file_schema.scene import Element_data, Position_data
+from file_schema.config import BinData
+from file_schema.scene import ElementData, PositionData
 from entity.choose_mesh import get_downsampled_mesh
 
 
 class Bin():
-    def __init__(self, data: Bin_data):
-        self.name = data["name"]
-        self.path = data["path"]
-        self.random_color = data["random_color"]
-        self.mm_2_m = data["mm_2_m"]
-        self.dimensions = data["dimensions"]
+    def __init__(self, data: BinData):
+        self.name = data.name
+        self.path = data.path
+        self.random_color = data.random_color
+        self.mm_2_m = data.mm_2_m
+        self.dimensions = data.dimensions
 
         if self.mm_2_m:
                 self.dimensions =np.multiply(self.dimensions, 1 / 1000)
@@ -41,14 +41,14 @@ class Bin():
     
     def to_element(self):
         name = self.name
-        pos = Position_data(
+        pos = PositionData(
             location= self.obj.get_location().tolist(), 
             orientation= self.obj.get_rotation_euler().tolist()
             )
         
-        return Element_data(name= name, pos=[pos])
+        return ElementData(name= name, pos=[pos])
     
-    def from_element(self, position: Position_data):
-        self.obj.set_location(position["location"])
-        self.obj.set_rotation_euler(position["orientation"])
+    def from_element(self, position: PositionData):
+        self.obj.set_location(position.location)
+        self.obj.set_rotation_euler(position.orientation)
         

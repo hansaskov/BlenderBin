@@ -1,36 +1,49 @@
-from typing import List, TypedDict
+from dataclasses import asdict, dataclass
+from typing import List
+from dacite import from_dict
+
 import json
 
-class Component_data(TypedDict):
+@dataclass
+class ComponentData():
     name: str
     path: str
     obj_id: int
     random_color: bool
     mm_2_m: float
 
-class Bin_data(TypedDict):
+@dataclass
+class BinData():
     name: str
     path: str
     random_color: bool
     mm_2_m: float
     dimensions: List[float]
 
-class Camera_data(TypedDict):
+@dataclass
+class CameraData():
     cx: float
     cy: float
     fx: float 
     fy: float
     height: int 
     width: int 
-
-class Config_data(TypedDict):
+    
+@dataclass
+class ConfigData():
     dataset_name: str
-    components: List[Component_data]
-    bins: List[Bin_data]
-    camera: Camera_data
+    components: List[ComponentData]
+    bins: List[BinData]
+    camera: CameraData
 
      
-def load_config_from_file(filename):
-    with open(filename, 'r') as f:
+def load_config_from_file(file_path: str):
+    with open(file_path, 'r') as f:
         dict_obj = json.load(f)
-        return Config_data(dict_obj)
+        return from_dict(data_class=ConfigData, data=dict_obj)
+    
+def save_config_to_file(config: ConfigData, file_path: str):
+    with open(file_path, 'w') as f:
+        dictionary = asdict(config)
+        json.dump(dictionary, f, indent=4)
+

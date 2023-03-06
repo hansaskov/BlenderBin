@@ -1,21 +1,25 @@
-from file_schema.config import Config_data, load_config_from_file
-from file_schema.scene import Scene_data, load_scene_from_file
+import blenderproc as bproc
+import sys
+import os
+
+myDir = os.getcwd()
+sys.path.append(myDir)
+
+from file_schema.config import ConfigData, load_config_from_file
+from file_schema.scene import SceneData, load_scene_from_file
 from entity.component import Component
 from entity.bin import Bin
 
-import blenderproc as bproc
 import math
 import colorsys
 import argparse
 import numpy as np
-import sys
-import os
+
 import time
 import shutil
 
 
-myDir = os.getcwd()
-sys.path.append(myDir)
+
 
 
 
@@ -25,22 +29,22 @@ output_dir = "data"
 
 class Render:
                            
-    def __init__(self, config_data: Config_data):
+    def __init__(self, config_data: ConfigData):
         bproc.init()
         self.config_data = config_data
-        self.camera = config_data["camera"]
-        self.components = [ Component(comp_data) for comp_data in config_data['components'] ] 
-        self.bins = [ Bin(bin_data) for bin_data in config_data["bins"] ]
+        self.camera = config_data.camera
+        self.components = [ Component(comp_data) for comp_data in config_data.components ] 
+        self.bins = [ Bin(bin_data) for bin_data in config_data.bins ]
         self.bin = self.bins[0]
 
         K = [
-            [self.camera["fx"], 0, self.camera["cx"]],
-            [0, self.camera["fy"], self.camera["cy"]],
+            [self.camera.fx, 0, self.camera.cx],
+            [0, self.camera.fy, self.camera.cy],
             [0, 0, 1]
         ]
         
         self.light = bproc.types.Light()
-        bproc.camera.set_intrinsics_from_K_matrix(K=K, image_height=self.camera["height"], image_width=self.camera["width"])
+        bproc.camera.set_intrinsics_from_K_matrix(K=K, image_height=self.camera.height, image_width=self.camera.width)
         bproc.renderer.enable_depth_output(activate_antialiasing=False)
         bproc.renderer.set_max_amount_of_samples(50)
         
@@ -109,7 +113,7 @@ class Render:
         bproc.camera.add_camera_pose(cam2world)
 
         # Compute raycasting to only show visible objects
-        sqrt_rays = round(math.sqrt(self.camera["height"] * self.camera["width"]) / 4)
+        sqrt_rays = round(math.sqrt(self.camera.height * self.camera.width) / 4)
         obj_visible = bproc.camera.visible_objects(cam2world, sqrt_rays)
         
         # Filter visible components
@@ -118,18 +122,18 @@ class Render:
 
         return comp_visible
 
-    def run(self, scene: Scene_data, random_background = True, img_amount = 4):
+    def run(self, scene: SceneData, random_background = True, img_amount = 4):
         
         # set bin location
         for bin in self.bins:
-            if bin.name == scene["bin"]["name"]:
-                bin.from_element(scene["bin"]["pos"][0])
+            if bin.name == scene.bin.name:
+                bin.from_element(scene.bin.pos[0])
                 
         # Find matching components and set their position. 
-        for element in scene["comps"]:
+        for element in scene.comps:
             for comp in self.components:
-                if comp.name == element["name"]:
-                    comp.from_element(element["pos"])
+                if comp.name == element.name:
+                    comp.from_element(element.pos)
                     
         # Randomize material for bin
         if self.bin.random_color:
@@ -162,7 +166,7 @@ class Render:
             # Save data in the bop format
             bproc.writer.write_bop(
                 output_dir=os.path.join(output_dir),
-                dataset=self.config_data["dataset_name"],
+                dataset=self.config_data.dataset_name,
                 target_objects= all_visible_comp ,
                 colors=data['colors'],
                 depths=data['depth'],

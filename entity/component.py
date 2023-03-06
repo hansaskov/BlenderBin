@@ -2,17 +2,17 @@
 from typing import List
 import blenderproc.api.loader as loader
 from blenderproc.python.types.MeshObjectUtility import MeshObject
-from file_schema.config import Component_data
-from file_schema.scene import Element_data, Position_data
+from file_schema.config import ComponentData
+from file_schema.scene import ElementData, PositionData
 from entity.choose_mesh import get_downsampled_mesh
 
 class Component():
-    def __init__(self, data: Component_data):
-        self.name = data["name"]
-        self.obj_id = data["obj_id"]
-        self.path = data["path"]
-        self.random_color = data["random_color"]
-        self.mm_2_m = data["mm_2_m"]
+    def __init__(self, data: ComponentData):
+        self.name = data.name
+        self.obj_id = data.obj_id
+        self.path = data.path
+        self.random_color = data.random_color
+        self.mm_2_m = data.mm_2_m
       
     def load(self, build_convex: bool, downsample_mesh = False): 
         
@@ -49,16 +49,16 @@ class Component():
                         
     def to_element(self):
         name = self.name
-        pos = [ Position_data(location=obj.get_location().tolist(), orientation= obj.get_rotation_euler().tolist()) for obj in self.obj_list ]
+        pos = [ PositionData(location=obj.get_location().tolist(), orientation= obj.get_rotation_euler().tolist()) for obj in self.obj_list ]
 
-        return Element_data(name=name, pos=pos)
+        return ElementData(name=name, pos=pos)
     
-    def from_element(self, positions: List[Position_data]):
+    def from_element(self, positions: List[PositionData]):
         
         self.add_to_obj_list(max= len(positions))
         
         # Set position of all new objects. 
         for (position, obj) in zip(positions, self.obj_list):
-            obj.set_location(position["location"])
-            obj.set_rotation_euler(position["orientation"])
+            obj.set_location(position.location)
+            obj.set_rotation_euler(position.orientation)
             

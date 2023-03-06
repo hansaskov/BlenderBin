@@ -2,7 +2,7 @@ import resources.bop_toolkit.scripts.calc_gt_masks as masks
 import resources.bop_toolkit.scripts.calc_gt_info as info
 import resources.bop_toolkit.scripts.calc_gt_coco as coco
 import resources.bop_toolkit.scripts.calc_model_info as model
-from file_schema.config import Config_data
+from file_schema.config import load_config_from_file
 
 import argparse
 import sys
@@ -37,9 +37,9 @@ if __name__ == '__main__':
     
     
     
-    config = Config_data.load_from_file(args.config)
+    config = load_config_from_file(args.config)
     
-    dir = "./data/" + config.dataset + "/models/"
+    dir = "./data/" + config.dataset_name + "/models/"
     if not os.path.exists(dir):
             os.makedirs(dir)
             for comp in config.components:
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     
     par = DataParams(
         data_path=  "data",
-        name=       config.dataset,
+        name=       config.dataset_name,
         split=      "train",
         split_type= "pbr",
         obj_ids=    [comp.obj_id for comp in config.components],

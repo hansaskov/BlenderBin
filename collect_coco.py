@@ -1,6 +1,10 @@
+
 import os
-import numpy as np
 import json
+from typing import TypedDict
+
+
+
 
 bop_path = '/home/hansaskov/Desktop/code/mmdetection/data'
 dataset_name = 'icbin'
@@ -9,7 +13,7 @@ split_type = None
 coco_filename = "scene_gt_coco.json"
 
 folder_path = bop_path + "/" + dataset_name + "/" + split 
-if split_type != None: folder_path = folder_path + "_" + split_type 
+if split_type is not None: folder_path = folder_path + "_" + split_type 
 scene_folder_path = folder_path + "/" + "{scene_id:06d}/"
 
 # How many folders exists in folder
@@ -27,9 +31,9 @@ for i in range(folder_amount):
 
 
 # Verify that the constant variables are the same across all dicts an save it to the new dict. 
-isInfoEqual =       list(map(lambda dic: dic["info"]        == dicts[0]["info"],        dicts))
-isLicensesEqual =   list(map(lambda dic: dic["licenses"]    == dicts[0]["licenses"],    dicts))
-isCategoriesEqual = list(map(lambda dic: dic["categories"]  == dicts[0]["categories"],  dicts))
+isInfoEqual =       [dic["info"]        == dicts[0]["info"] for dic in dicts]
+isLicensesEqual =   [dic["licenses"]    == dicts[0]["licenses"] for dic in dicts]
+isCategoriesEqual = [dic["categories"]  == dicts[0]["categories"] for dic in dicts]
 
 if False in isInfoEqual:        LookupError("Info is not equal for all folders")
 if False in isLicensesEqual:    LookupError("License is not equal for all folders")
