@@ -1,6 +1,5 @@
 import blenderproc as bproc
 import colorsys
-import argparse
 import os
 import numpy as np
 

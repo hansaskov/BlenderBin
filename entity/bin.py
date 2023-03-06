@@ -1,10 +1,8 @@
-
-from typing import List
 import numpy as np
 import blenderproc.api.loader as loader
-from config_schema.config import Bin_data
-from config_schema.scene import Element_data, Position_data
-from entity.choose_mesh import choose_mesh
+from file_schema.config import Bin_data
+from file_schema.scene import Element_data, Position_data
+from entity.choose_mesh import get_downsampled_mesh
 
 
 class Bin():
@@ -22,7 +20,7 @@ class Bin():
         
         # Downsample mesh if necesarry
         if downsample_mesh:
-            self.path = choose_mesh(self.path)
+            self.path = get_downsampled_mesh(self.path)
         
         # Load mesh
         self.obj = loader.load_obj(self.path)[0]
@@ -43,7 +41,10 @@ class Bin():
     
     def to_element(self):
         name = self.name
-        pos = Position_data(location= self.obj.get_location().tolist(), orientation= self.obj.get_rotation_euler().tolist())
+        pos = Position_data(
+            location= self.obj.get_location().tolist(), 
+            orientation= self.obj.get_rotation_euler().tolist()
+            )
         
         return Element_data(name= name, pos=[pos])
     

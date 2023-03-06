@@ -31,11 +31,10 @@ def save_scene_to_folder(scene: Scene_data, folder_path: str):
     
     with open(file_path, 'w') as f:
         json.dump(scene, f, indent=4)
-    
+        
 
 def load_scene_from_file(file_path):
     with open(file_path, 'r') as f:
-        
         scene_dict = json.load(f)
         
     return Scene_data(scene_dict)

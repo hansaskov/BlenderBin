@@ -1,18 +1,17 @@
-import argparse
-import sys
-import os
-
-myDir = os.getcwd()
-sys.path.append(myDir)
-
 import resources.bop_toolkit.scripts.calc_gt_masks as masks
 import resources.bop_toolkit.scripts.calc_gt_info as info
 import resources.bop_toolkit.scripts.calc_gt_coco as coco
 import resources.bop_toolkit.scripts.calc_model_info as model
+from file_schema.config import Config_data
 
-from config_schema.config import Config_data
-
+import argparse
+import sys
+import os
 import open3d as o3d
+
+myDir = os.getcwd()
+sys.path.append(myDir)
+
 
 def save_obj_as_ply(obj_path, save_folder, number):
     mesh = o3d.io.read_triangle_mesh(obj_path)
@@ -61,7 +60,7 @@ if __name__ == '__main__':
     
     input = str(args.scripts)
     scripts = input.split(',')
-    scripts = list(map(lambda s: s.strip(), scripts))
+    scripts = [s.strip() for s in scripts]
     print(scripts)
     
     

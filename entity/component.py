@@ -2,9 +2,9 @@
 from typing import List
 import blenderproc.api.loader as loader
 from blenderproc.python.types.MeshObjectUtility import MeshObject
-from config_schema.config import Component_data
-from config_schema.scene import Element_data, Position_data
-from entity.choose_mesh import choose_mesh
+from file_schema.config import Component_data
+from file_schema.scene import Element_data, Position_data
+from entity.choose_mesh import get_downsampled_mesh
 
 class Component():
     def __init__(self, data: Component_data):
@@ -18,7 +18,7 @@ class Component():
         
         # Downsample mesh if necesarry
         if downsample_mesh:
-            self.path = choose_mesh(self.path)
+            self.path = get_downsampled_mesh(self.path)
         
         # Load mesh
         self.obj = loader.load_obj(self.path)[0]
@@ -47,14 +47,14 @@ class Component():
                 self.obj_list.append(self.obj.duplicate())
             
                         
-    def get_element(self):
+    def to_element(self):
         name = self.name
-        pos = [Position_data(location=obj.get_location().tolist(), orientation= obj.get_rotation_euler().tolist()) for obj in self.obj_list]
+        pos = [ Position_data(location=obj.get_location().tolist(), orientation= obj.get_rotation_euler().tolist()) for obj in self.obj_list ]
 
         return Element_data(name=name, pos=pos)
     
     def from_element(self, positions: List[Position_data]):
-        # Set the component amount
+        
         self.add_to_obj_list(max= len(positions))
         
         # Set position of all new objects. 

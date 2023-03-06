@@ -1,23 +1,12 @@
-
 import blenderproc as bproc
+from file_schema.scene import Scene_data, save_scene_to_folder
+from file_schema.config import Config_data, load_config_from_file
+from blenderproc.python.types.MeshObjectUtility import MeshObject
+from entity.component import Component
+from entity.bin import Bin
 import argparse
 import numpy as np
 import random
-import sys
-import os
-
-myDir = os.getcwd()
-sys.path.append(myDir)
-
-from config_schema.scene import Scene_data, save_scene_to_folder
-from config_schema.config import Config_data, load_config_from_file
-from entity.component import Component
-from entity.bin import Bin
-
-from blenderproc.python.types.MeshObjectUtility import MeshObject
-
-
-from typing import List
 
 # Global variables
 vhacd_path = 'resources/vhacd'
@@ -50,8 +39,8 @@ class Walls:
 class Simulator:
     def __init__(self, config_path: str, config_data: Config_data  ):       
         self.config_path = config_path   
-        self.components = list(map(lambda comp_data: Component(comp_data) , config_data['components']))
-        self.bins = list(map(lambda bin_data: Bin(bin_data) , config_data['bins']))        
+        self.components = [Component(comp_data) for comp_data in config_data['components']]
+        self.bins = [Bin(bin_data) for bin_data in config_data['bins']]        
         
         self.bin = self.bins[0]
         self.walls = Walls()
@@ -66,7 +55,7 @@ class Simulator:
         x, y, z =  (self.bin.dimensions)
 
         # Calculate volume diffrence between components and bin
-        total_volume = sum(list(map(lambda comp: comp.volume * len(comp.obj_list), self.components)))
+        total_volume = sum([comp.volume * len(comp.obj_list) for comp in self.components])
         box_volume = x * y * z
         volume_frac = total_volume / box_volume
 
@@ -77,13 +66,13 @@ class Simulator:
         ))
         
     def get_all_comp_objs(self): 
-        return sum(list(map(lambda comp: comp.obj_list, self.components)), [])
+        return sum([comp.obj_list for comp in self.components], [])
     
     def get_amount_of_components(self):
-        return sum(list(map(lambda comp: len(comp.obj_list), self.components)))
+        return sum([len(comp.obj_list) for comp in self.components])
     
     def get_scene(self):
-        comps = [ comp.get_element() for comp in self.components ]
+        comps = [ comp.to_element() for comp in self.components ]
         bin = self.bin.to_element() 
         
         return Scene_data(config_path= self.config_path, comps=comps, bin=bin)
@@ -133,10 +122,10 @@ class Simulator:
         )  
         
 parser = argparse.ArgumentParser()
-parser.add_argument('--comp-amount-min',  nargs='?', default='1', help='The min amount of components that should be in the bin')
-parser.add_argument('--comp-amount-max',  nargs='?', default='15', help='The max amount of components that can be in the bin')
-parser.add_argument('--number-of-runs',   nargs='?', default='5', help='The number of simulations you would like to do')
-parser.add_argument('--config-path',      nargs='?', default='config.json', help='filepath to configuration JSON file')
+parser.add_argument('--comp-amount-min', nargs='?', default='1', help='The min amount of components that should be in the bin')
+parser.add_argument('--comp-amount-max', nargs='?', default='15', help='The max amount of components that can be in the bin')
+parser.add_argument('--number-of-runs',  nargs='?', default='5', help='The number of simulations you would like to do')
+parser.add_argument('--config-path',     nargs='?', default='config.json', help='filepath to configuration JSON file')
 args = parser.parse_args()
 
 config_file = str(args.config_path)

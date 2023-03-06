@@ -1,25 +1,23 @@
+from file_schema.config import Config_data, load_config_from_file
+from file_schema.scene import Scene_data, load_scene_from_file
+from entity.component import Component
+from entity.bin import Bin
+
 import blenderproc as bproc
 import math
 import colorsys
-import open3d as o3d
 import argparse
 import numpy as np
-import json
 import sys
 import os
 import time
-import random
 import shutil
 
 
 myDir = os.getcwd()
 sys.path.append(myDir)
 
-from config_schema.config import Camera_data, Config_data, load_config_from_file
-from config_schema.scene import Scene_data, load_scene_from_file
-from entity.component import Component
-from entity.bin import Bin
-from typing import List
+
 
 haven_path = "resources/blenderproc/haven"
 output_dir = "data"
@@ -52,10 +50,10 @@ class Render:
             entities.load(build_convex=False, downsample_mesh= False)
 
     def get_all_comp_objs(self): 
-        return sum(list(map(lambda comp: comp.obj_list, self.components)), [])
+        return sum([comp.obj_list for comp in self.components], [])
     
     def get_amount_of_components(self):
-        return sum(list(map(lambda comp: len(comp.obj_list), self.components)))
+        return sum([len(comp.obj_list) for comp in self.components])
     
     def randomize_light(self):
         # Randomize light source

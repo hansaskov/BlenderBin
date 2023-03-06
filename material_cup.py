@@ -1,14 +1,9 @@
 import blenderproc as bproc
-from typing import List
-import argparse
-import numpy as np
-import os
-import math
-import json
-import random
 
-from blenderproc.python.types.MeshObjectUtility import MeshObject
-from blenderproc.python.types.MaterialUtility import Material
+import os
+
+
+
 
 objs = bproc.loader.load_obj('3d_models/comp/coffee_cup.ply')
 

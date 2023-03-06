@@ -4,7 +4,7 @@ import open3d as o3d
 import numpy as np
 
 # Reduce vertecies in mesh for simulation
-def choose_mesh( input_file: str, cache_folder: str = "./resources/obj_cache/", num_of_triangles: int = 8192):
+def get_downsampled_mesh( input_file: str, num_of_triangles: int = 1024, cache_folder: str = "./resources/obj_cache/", ):
 
     # Load in mesh
     mesh_in = o3d.io.read_triangle_mesh(input_file)
@@ -13,7 +13,7 @@ def choose_mesh( input_file: str, cache_folder: str = "./resources/obj_cache/", 
     if len(mesh_in.triangles) < num_of_triangles:
         return input_file
     
-    # Calculate mesh
+    # Get unique name of mesh, based on triangles
     print("Hashing mesh of " + input_file)
     mesh_data = np.asarray(mesh_in.triangles)
     mesh_data = mesh_data * num_of_triangles
