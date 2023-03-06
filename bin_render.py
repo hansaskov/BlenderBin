@@ -19,10 +19,6 @@ import time
 import shutil
 
 
-
-
-
-
 haven_path = "resources/blenderproc/haven"
 output_dir = "data"
 

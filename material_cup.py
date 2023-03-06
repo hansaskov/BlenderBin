@@ -1,9 +1,5 @@
 import blenderproc as bproc
-
 import os
-
-
-
 
 objs = bproc.loader.load_obj('3d_models/comp/coffee_cup.ply')
 

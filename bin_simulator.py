@@ -6,7 +6,6 @@ import sys
 myDir = os.getcwd()
 sys.path.append(myDir)
 
-
 from file_schema.scene import SceneData, save_scene_to_folder
 from file_schema.config import ConfigData, load_config_from_file
 from blenderproc.python.types.MeshObjectUtility import MeshObject
