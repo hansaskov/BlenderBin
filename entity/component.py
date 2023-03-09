@@ -22,6 +22,11 @@ class Component():
         
         # Load mesh
         self.obj = loader.load_obj(self.path)[0]
+
+        # Use vertex color for texturing
+        for mat in self.obj.get_materials():
+            mat.map_vertex_color()
+
         if build_convex:
             self.obj.enable_rigidbody(active= True, collision_shape="COMPOUND")
             self.obj.build_convex_decomposition_collision_shape(vhacd_path='resources/vhacd', cache_dir='resources/vhacd/decomp_cache/')
