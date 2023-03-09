@@ -22,13 +22,18 @@ Next, install the necessary dependencies:
 ``` bash
 pip install -r requirements.txt
 ```
-For the bin_render.py script, download the Haven background:
+You have not install blenderproc, but we need some extra dependencies inside the blenderproc enviroment. 
+``` bash
+blenderproc pip install open3d dacite 
+```
+
+To run the rendering with random background download the haven collection. To run without a random backround enable the `--no-random-bg` flag
 
 ``` bash
 blenderproc download haven resources/blenderproc/haven
 ```
 
-Note that these commands may take some time to complete. It is recommended to run them in separate terminals.
+Note that these commands may take some time to complete.
 
 # Running the Render
 
