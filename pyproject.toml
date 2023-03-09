@@ -1,9 +1,0 @@
-[tool.ruff]
-extend-select = ["C4", "SIM", "N801", "N802"]
-
-target-version = "py38"
-select = ["E", "F"]
-ignore = []
-
-# Same as Black.
-line-length = 140
