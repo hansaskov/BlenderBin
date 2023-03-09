@@ -5,7 +5,7 @@
             "name" : "coffee_cup",
             "obj_id": 1,
             "path" : "./3d_models/comp/coffee_cup.ply",
-            "random_color" : true,
+            "random_color" : false,
             "mm_2_m": true
         },
         {
