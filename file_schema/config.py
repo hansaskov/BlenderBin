@@ -1,8 +1,6 @@
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from typing import List
-from dacite import from_dict
 
-import json
 
 @dataclass
 class ComponentData():
@@ -35,15 +33,3 @@ class ConfigData():
     components: List[ComponentData]
     bins: List[BinData]
     camera: CameraData
-
-     
-def load_config_from_file(file_path: str):
-    with open(file_path, 'r') as f:
-        dict_obj = json.load(f)
-        return from_dict(data_class=ConfigData, data=dict_obj)
-    
-def save_config_to_file(config: ConfigData, file_path: str):
-    with open(file_path, 'w') as f:
-        dictionary = asdict(config)
-        json.dump(dictionary, f, indent=4)
-

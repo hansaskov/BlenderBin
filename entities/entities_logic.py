@@ -3,6 +3,7 @@ import hashlib
 import open3d as o3d
 import numpy as np
 
+
 # Reduce vertecies in mesh for simulation
 def get_downsampled_mesh( input_file: str, num_of_triangles: int = 1024, cache_folder: str = "./resources/obj_cache/", ):
 
@@ -34,4 +35,5 @@ def get_downsampled_mesh( input_file: str, num_of_triangles: int = 1024, cache_f
     mesh_out = mesh_in.simplify_quadric_decimation(target_number_of_triangles= num_of_triangles)
     o3d.io.write_triangle_mesh(cached_file, mesh_out)
     return cached_file
-      
+
+

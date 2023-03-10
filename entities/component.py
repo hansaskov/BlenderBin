@@ -4,7 +4,7 @@ import blenderproc.api.loader as loader
 from blenderproc.python.types.MeshObjectUtility import MeshObject
 from file_schema.config import ComponentData
 from file_schema.scene import ElementData, PositionData
-from entity.choose_mesh import get_downsampled_mesh
+from entities.entities_logic import get_downsampled_mesh
 
 class Component():
     def __init__(self, data: ComponentData):

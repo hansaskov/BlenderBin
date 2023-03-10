@@ -5,10 +5,11 @@ import os
 myDir = os.getcwd()
 sys.path.append(myDir)
 
-from file_schema.config import ConfigData, load_config_from_file
-from file_schema.scene import SceneData, load_scene_from_file
-from entity.component import Component
-from entity.bin import Bin
+from file_schema.scene import SceneData
+from file_schema.config import ConfigData
+from file_schema.schema_logic import load_schema_from_file, save_schema_to_folder
+from entities.component import Component
+from entities.bin import Bin
 
 import math
 import colorsys
@@ -191,7 +192,7 @@ if __name__ == "__main__":
 
     # Create an instance of the Renderer class
     
-    config = load_config_from_file(args.config_path)
+    config = load_schema_from_file(file_path= args.config_path, data_class=ConfigData)
     
     rend = Render(config_data= config)
     
@@ -222,7 +223,7 @@ if __name__ == "__main__":
                 shutil.move(queue_dir + file, tmp_dir + file)
 
                 # Load the scene from the file
-                scene = load_scene_from_file(tmp_dir + file)
+                scene = load_schema_from_file(file_path= tmp_dir + file, data_class= SceneData)
 
                 # Render the scene
                 rend.run(scene, img_amount=args.img_amount, random_background= args.random_bg)

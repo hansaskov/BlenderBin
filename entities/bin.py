@@ -2,7 +2,7 @@ import numpy as np
 import blenderproc.api.loader as loader
 from file_schema.config import BinData
 from file_schema.scene import ElementData, PositionData
-from entity.choose_mesh import get_downsampled_mesh
+from entities.entities_logic import get_downsampled_mesh
 
 
 class Bin():
@@ -38,7 +38,6 @@ class Bin():
         self.obj.set_cp("category_id", "bin")
         
 
-    
     def to_element(self):
         name = self.name
         pos = PositionData(

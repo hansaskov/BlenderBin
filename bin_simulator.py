@@ -6,11 +6,12 @@ import sys
 myDir = os.getcwd()
 sys.path.append(myDir)
 
-from file_schema.scene import SceneData, save_scene_to_folder
-from file_schema.config import ConfigData, load_config_from_file
+from file_schema.scene import SceneData
+from file_schema.config import ConfigData
+from file_schema.schema_logic import load_schema_from_file, save_schema_to_folder
 from blenderproc.python.types.MeshObjectUtility import MeshObject
-from entity.component import Component
-from entity.bin import Bin
+from entities.component import Component
+from entities.bin import Bin
 import argparse
 import numpy as np
 import random
@@ -137,7 +138,7 @@ args = parser.parse_args()
 
 config_file = str(args.config_path)
 
-config_data = load_config_from_file(config_file)
+config_data = load_schema_from_file(file_path=config_file, data_class= ConfigData)
 simulator = Simulator(config_path= config_file, config_data= config_data)
 
 low = int(args.comp_amount_min)
@@ -150,4 +151,4 @@ comp_amount_list.sort()
 for comp_amount in comp_amount_list:
     simulator.run(comp_amount, use_walls= False)
     scene = simulator.get_scene()
-    save_scene_to_folder(scene= scene, folder_path= "./resources/simulations/queue")
+    save_schema_to_folder(data= scene, folder_path= "./resources/simulations/queue")
