@@ -4,7 +4,6 @@ from file_schema.config import BinData
 from file_schema.scene import ElementData, PositionData
 from entities.entities_logic import get_downsampled_mesh
 
-
 class Bin():
     def __init__(self, data: BinData):
         self.name = data.name
@@ -30,9 +29,11 @@ class Bin():
             self.obj.enable_rigidbody(active= False, collision_shape="COMPOUND")
             self.obj.build_convex_decomposition_collision_shape(vhacd_path='resources/vhacd', cache_dir='resources/vhacd/decomp_cache/')
         
+        # Scale down
         if self.mm_2_m:
             self.obj.set_scale([1/1000, 1/1000, 1/1000])
         
+        # Set at middle
         self.obj.set_location([0, 0, 0])
         self.obj.set_shading_mode('auto')
         self.obj.set_cp("category_id", "bin")

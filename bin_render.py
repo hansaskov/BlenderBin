@@ -7,7 +7,7 @@ sys.path.append(myDir)
 
 from file_schema.scene import SceneData
 from file_schema.config import ConfigData
-from file_schema.schema_logic import load_schema_from_file, save_schema_to_folder
+from file_schema.schema_logic import load_schema_from_file
 from entities.component import Component
 from entities.bin import Bin
 

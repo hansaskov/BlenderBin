@@ -1,85 +1,98 @@
 
+
 import os
-import json
-from typing import TypedDict
+from ..file_schema.coco import CocoData
+from ..file_schema.schema_logic import load_schema_from_file, save_schema_to_file
 
+# Recursively searches for a filename in a folder and it's sub folders, up to a 
+def search_files(filename, folderpath='.', depth=-1):
 
-
-
-bop_path = '/home/hansaskov/Desktop/code/mmdetection/data'
-dataset_name = 'icbin'
-split = 'train'
-split_type = None
-coco_filename = "scene_gt_coco.json"
-
-folder_path = bop_path + "/" + dataset_name + "/" + split 
-if split_type is not None: folder_path = folder_path + "_" + split_type 
-scene_folder_path = folder_path + "/" + "{scene_id:06d}/"
-
-# How many folders exists in folder
-folder_amount = len(next(os.walk(folder_path))[1])
-if folder_amount <= 1: raise FileNotFoundError("The dataset split folder must container more than 1. folder")
-
-# Load all coco.json files and save it as a dictionary in the dicts variable. 
-dicts = []
-for i in range(folder_amount):
-    scene_folder = scene_folder_path.format(scene_id = i)
-    coco_path = scene_folder + coco_filename
+    files = []
+    for root, dirs, filenames in os.walk(folderpath):
+        
+        # check if depth limit is reached
+        if depth != -1:
+            level = root.replace(folderpath, '').count(os.sep)
+            if level > depth:
+                continue
+        
+        for file in filenames:
+            if file == filename:
+                files.append(os.path.join(root, file))
     
-    with open(coco_path, 'r') as f:
-        dicts.append(json.load(f))
+    return files
 
 
-# Verify that the constant variables are the same across all dicts an save it to the new dict. 
-isInfoEqual =       [dic["info"]        == dicts[0]["info"] for dic in dicts]
-isLicensesEqual =   [dic["licenses"]    == dicts[0]["licenses"] for dic in dicts]
-isCategoriesEqual = [dic["categories"]  == dicts[0]["categories"] for dic in dicts]
+def folder_difference(input_path: str, output_path: str) -> str:
+    """
+    This function takes two file paths as input and returns the relative
+    path difference between the two folders.
+    """
+    # Get the absolute paths of the input files
+    abs_input_path = os.path.abspath(input_path)
+    abs_output_path = os.path.abspath(output_path)
+    
+    # Split the paths into lists of directory names
+    split_input_path = abs_input_path.split(os.sep)
+    split_output_path = abs_output_path.split(os.sep)
+    
+    # Remove the filename from the end of each path list
+    split_input_path.pop()
+    split_output_path.pop()
+    
+    # Join the path lists back into strings using the path separator
+    path1_str = os.sep.join(split_input_path)
+    path2_str = os.sep.join(split_output_path)
+    
+    commonprefix = os.path.commonprefix([path1_str, path2_str])
+    
+    res = path1_str[len(commonprefix):]
+    
+    print(res)
+    
+    return res
 
-if False in isInfoEqual:        LookupError("Info is not equal for all folders")
-if False in isLicensesEqual:    LookupError("License is not equal for all folders")
-if False in isCategoriesEqual:  LookupError("Category is not equal for all folders")
 
 
-#Initialize new dictionary to be saved
-new_dict = {
-    "info": dicts[0]["info"],
-    "license": dicts[0]["licenses"],
-    "categories": dicts[0]["categories"],
-    "images": [],
-    "annotations": [],
-}
+in_folder_path = "/home/hansaskov/Desktop/code/mmdetection/data/icbin/test"
+in_coco_filename = "scene_gt_coco.json"
+out_coco_filepath = "/home/hansaskov/Desktop/code/mmdetection/data/icbin/test/new_coco.json"
 
+# Search directory for all files with the defined coco filename and return their filepath
+coco_paths = search_files(filename= in_coco_filename, folderpath=in_folder_path, depth= 2)
+coco_paths.sort()
 
-# 3. 
-#   Iterate through all dictionaries 
-#       Iterate through images
-#           get associated annotations
-#           change images:id
-#           Change images:file_name
-#           Iterate through annotations to image
-#               Change annotation:id
-#               Change annotation:img_id        
+# Load the filepaths to a list on the CocoData format
+coco_data_list = [ load_schema_from_file(file_path= coco_path, data_class= CocoData) for coco_path in coco_paths ] 
+
+new_coco_data = CocoData(
+    info= coco_data_list[0].info,
+    licenses= coco_data_list[0].licenses,
+    categories= coco_data_list[0].categories,
+    annotations= [],
+    images= [],
+)
 
 img_id_count = 0
 ann_id_count = 0
 
-for scene_id, coco_dict in enumerate(dicts):
-    scene_path = "{scene_id:06d}/".format(scene_id = scene_id)
-    for image in coco_dict["images"]:
-        annotations = list(filter(lambda elem: elem["image_id"] == image["id"], coco_dict["annotations"]))
-        image["id"] = img_id_count
-        image["file_name"] = scene_path + image["file_name"]
+for data, path in zip(coco_data_list, coco_paths):
+    scene_path = folder_difference(path, out_coco_filepath )
+    for image in data.images:
+        annotations = list(filter(lambda elem: elem.image_id == image.id, data.annotations))
+        image.id = img_id_count
+        image.file_name = scene_path + "/" + image.file_name
         for ann in annotations: 
-            ann["id"] = ann_id_count
-            ann["image_id"] = image["id"]
-            new_dict["annotations"].append(ann)
+            ann.id = ann_id_count
+            ann.image_id = image.id
+            new_coco_data.annotations.append(ann)
             ann_id_count += 1
 
-        new_dict["images"].append(image)
+        new_coco_data.images.append(image)
         img_id_count += 1
-        if img_id_count % 100 == 2: print("Processing img:", img_id_count)
+        print("Processing img:", img_id_count)
 
 
 print("Saving to disk, please wait")
-with open(folder_path + "/test.json", "w") as fp:
-    json.dump(new_dict,fp, indent=4) 
+save_schema_to_file(data=new_coco_data, file_path=out_coco_filepath)
+

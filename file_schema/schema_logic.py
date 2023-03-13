@@ -2,22 +2,26 @@ from dataclasses import asdict
 import hashlib
 import json
 import os
+from typing import Type, TypeVar
 
 from dacite import from_dict
 from file_schema.config import ConfigData
 from file_schema.scene import SceneData
 
 
-def save_schema_to_file(data: ConfigData | SceneData, file_path: str):
+T = TypeVar("T")
+    
+def load_schema_from_file(file_path, data_class: Type[T] ):
+    with open(file_path, 'r') as f:
+        scene_dict = json.load(f)
+    data: data_class = from_dict(data_class=data_class, data=scene_dict) 
+    return data
+
+def save_schema_to_file(data: Type[T], file_path: str):
     with open(file_path, 'w') as f:
         dictionary = asdict(data)
         json.dump(dictionary, f, indent=4)
-        
-def load_schema_from_file(file_path, data_class: ConfigData | SceneData):
-    with open(file_path, 'r') as f:
-        scene_dict = json.load(f)
-    return from_dict(data_class=data_class, data=scene_dict)
-
+    
 def save_schema_to_folder(data: ConfigData | SceneData, folder_path: str):
     
     # Create unique file name        

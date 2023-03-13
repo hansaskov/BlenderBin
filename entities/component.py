@@ -1,7 +1,7 @@
-
 from typing import List
 import blenderproc.api.loader as loader
 from blenderproc.python.types.MeshObjectUtility import MeshObject
+import numpy as np
 from file_schema.config import ComponentData
 from file_schema.scene import ElementData, PositionData
 from entities.entities_logic import get_downsampled_mesh
@@ -27,19 +27,20 @@ class Component():
         for mat in self.obj.get_materials():
             mat.map_vertex_color()
 
+        # Enable convex decomposition
         if build_convex:
             self.obj.enable_rigidbody(active= True, collision_shape="COMPOUND")
             self.obj.build_convex_decomposition_collision_shape(vhacd_path='resources/vhacd', cache_dir='resources/vhacd/decomp_cache/')
         
-        self.obj.set_shading_mode('auto')
-        self.obj.set_cp("category_id", self.obj_id)
-        
+        # Scale component
         if (self.mm_2_m):
             self.obj.set_scale([1/1000, 1/1000, 1/1000])
         
         # Get component name and save output path.
         self.volume = self.obj.get_bound_box_volume()
         self.material = self.obj.get_materials()
+        self.obj.set_shading_mode('auto')
+        self.obj.set_cp("category_id", self.obj_id)
         
         # Dreate new list of dublicate objects
         self.obj_list: list[MeshObject] = [self.obj]
