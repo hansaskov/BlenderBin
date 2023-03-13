@@ -95,3 +95,7 @@ To use your own objects, you will need a 3D model of a box or environment and a 
       }
 }
 ```
+
+# Program Architecture
+We have split the render and simulator apart as it makes it easier to scale the simulation and rendering independently of each other. The flow of data can be described from the image below. 
+![Dataflow](images/BlenderBin-dataflow.png)
