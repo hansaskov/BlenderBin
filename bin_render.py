@@ -81,7 +81,7 @@ class Render:
 
         return material
 
-    def randomize_camera_poses(self):
+    def randomize_camera_pose(self):
            
         x, y, z = self.bin.dimensions
 
@@ -155,7 +155,7 @@ class Render:
         for i in range(img_amount):
             
             # Make random camera pose
-            all_visible_comp = self.randomize_camera_poses()
+            all_visible_comp = self.randomize_camera_pose()
 
             # Render Pipeline
             data = bproc.renderer.render()
@@ -174,7 +174,7 @@ class Render:
                 depth_scale=0.01,
             )
             
-            # Reset sim and restart.
+            # Reset keyframe and restart.
             bproc.utility.reset_keyframes()
         
         # Reset location. 

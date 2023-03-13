@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import  List
+from typing import  List, Optional
 
 @dataclass
 class PositionData():
@@ -16,3 +16,5 @@ class SceneData():
     config_path: str
     comps: List[ElementData]
     bin: ElementData
+    cameras: Optional[List[PositionData]]
+    

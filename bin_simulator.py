@@ -79,11 +79,10 @@ class Simulator:
     def get_amount_of_components(self):
         return sum([len(comp.obj_list) for comp in self.components])
     
-    def get_scene(self):
+    def to_scene(self):
         comps = [ comp.to_element() for comp in self.components ]
-        bin = self.bin.to_element() 
-        
-        return SceneData(config_path= self.config_path, comps=comps, bin=bin)
+        bin = self.bin.to_element()         
+        return SceneData(config_path= self.config_path, comps=comps, bin=bin, cameras= None)
         
     def run(self, amount_of_components, use_walls = False):
         
@@ -150,5 +149,5 @@ comp_amount_list.sort()
 
 for comp_amount in comp_amount_list:
     simulator.run(comp_amount, use_walls= False)
-    scene = simulator.get_scene()
+    scene = simulator.to_scene()
     save_schema_to_folder(data= scene, folder_path= "./resources/simulations/queue")
