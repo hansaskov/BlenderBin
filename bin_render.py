@@ -69,7 +69,7 @@ class Render:
 
     def randomize_materials(self):
         # Make a random material
-        material = bproc.material.create("random color")
+        material = np.random.choice(bproc.material.collect_all())
 
         h, l, s = np.random.uniform(0.1, 0.9, 3)
         r, g, b = colorsys.hls_to_rgb(h, l, s)
