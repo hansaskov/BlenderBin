@@ -5,11 +5,12 @@ import os
 myDir = os.getcwd()
 sys.path.append(myDir)
 
-from file_schema.scene import SceneData
+from file_schema.scene import PositionData, SceneData
 from file_schema.config import ConfigData
-from file_schema.schema_logic import load_schema_from_file
+from file_schema.schema_logic import load_schema_from_file, save_schema_to_folder
 from entities.component import Component
 from entities.bin import Bin
+from typing import List
 
 import math
 import colorsys
@@ -88,14 +89,13 @@ class Render:
 
         return material
 
-    def randomize_camera_pose(self):
-           
-        x, y, z = self.bin.dimensions
+    def calculate_camera_pose(self, bin_dimensions: List[float]):
+        x, y, z = bin_dimensions
 
         # Calculate a random point of interest
-        poi = np.array([np.random.uniform(-0.3*x, 0.3*x), 
-                        np.random.uniform(-0.3*y, 0.3*y), 
-                        np.random.uniform(-0.1*z, 0.3*z)])
+        poi = np.array([np.random.uniform(-0.3 * x, 0.3 * x),
+                        np.random.uniform(-0.3 * y, 0.3 * y),
+                        np.random.uniform(-0.1 * z, 0.3 * z)])
 
         # Sample random location
         location = bproc.sampler.shell(
@@ -106,27 +106,28 @@ class Render:
             elevation_max=90,
             uniform_volume=True
         )
-        
-        # calculate rotation towards point of intrest
-        rotation_matrix = bproc.camera.rotation_from_forward_vec( poi - location, inplane_rot= np.random.uniform(-0.7854, 0.7854))
 
-        # Make tansformation matrix from location (x, y, z) and rotation matrix
+        # Calculate rotation towards point of interest
+        rotation_matrix = bproc.camera.rotation_from_forward_vec(poi - location, inplane_rot=np.random.uniform(-0.7854, 0.7854))
+
+        # Make transformation matrix from location (x, y, z) and rotation matrix
         cam2world = bproc.math.build_transformation_mat(location, rotation_matrix)
 
-        # Add camera in scene, with location and rotation.
-        bproc.camera.add_camera_pose(cam2world)
+        return cam2world
+    
+    def get_visible_components_from_camera(self, cam2world):
 
         # Compute raycasting to only show visible objects
         sqrt_rays = round(math.sqrt(self.camera.height * self.camera.width) / 4)
         obj_visible = bproc.camera.visible_objects(cam2world, sqrt_rays)
-        
+
         # Filter visible components
         all_comps = set(self.get_all_comp_objs())
         comp_visible = obj_visible.intersection(all_comps)
 
         return comp_visible
 
-    def run(self, scene: SceneData, random_background = True, img_amount = 4):
+    def run(self, scene: SceneData, random_background = True, img_amount = 4, random_camera_positions = True) -> List[PositionData]:
         
         # set bin location
         for bin in self.bins:
@@ -151,19 +152,25 @@ class Render:
                 for comp in comp.obj_list:
                     comp.replace_materials(material)
                     
+                    
+        # Randomize lighting
+        self.randomize_light()    
+                
         # Set a random background
         if random_background: 
             haven_hdri_path = bproc.loader.get_random_world_background_hdr_img_path_from_haven(haven_path)
             bproc.world.set_world_background_hdr_img(haven_hdri_path)
 
-        # Randomize lighting
-        self.randomize_light()
+        # Randomize camera positions
+        if not scene.cameras or random_camera_positions:
+            scene.cameras = [self.calculate_camera_pose(self.bin.dimensions) for i in range(img_amount) ]
+        
+        # Render the scene for each camera viewpoint and save it in the bop format
+        for cam2world in scene.cameras:
 
-        for i in range(img_amount):
+            bproc.camera.add_camera_pose(cam2world)
+            all_visible_comp = self.get_visible_components_from_camera(cam2world)
             
-            # Make random camera pose
-            all_visible_comp = self.randomize_camera_pose()
-
             # Render Pipeline
             data = bproc.renderer.render()
 
@@ -193,8 +200,10 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--config-path',      nargs='?', default='config.json', help='filepath to configuration JSON file')
-    parser.add_argument('--random-bg', action=argparse.BooleanOptionalAction, default=True, help="Add a random background to the skybox from the haven benchmark")
     parser.add_argument('--img-amount', nargs='?', default=4, help="Amount of images per scene")
+    parser.add_argument('--random-cam', action=argparse.BooleanOptionalAction, default=True, help="Use the previous camera positions")
+    parser.add_argument('--random-bg', action=argparse.BooleanOptionalAction, default=True, help="Add a random background to the skybox from the haven benchmark")
+
     args = parser.parse_args()
 
     # Create an instance of the Renderer class
@@ -232,10 +241,14 @@ if __name__ == "__main__":
                 scene = load_schema_from_file(file_path= tmp_dir + file, data_class=SceneData)
 
                 # Render the scene
-                rend.run(scene, img_amount=args.img_amount, random_background= args.random_bg)
-
-                # Move the file to the complete directory
-                shutil.move(tmp_dir + file, complete_dir + file)
+                rend.run(scene, img_amount=args.img_amount, random_background= args.random_bg, random_camera_positions = args.random_cam)
+                
+                # Save scene to complete folder (with new camera positions)
+                save_schema_to_folder(scene, complete_dir)
+                
+                # Remove file from tmp dir
+                os.remove(path= tmp_dir + file)
+                
                 i = 0
 
         print("Timeout, no new scenes to render for 30 seconds")
