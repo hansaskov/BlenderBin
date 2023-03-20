@@ -18,6 +18,7 @@ import numpy as np
 
 import time
 import shutil
+import bpy
 
 
 haven_path = "resources/blenderproc/haven"
@@ -44,6 +45,13 @@ class Render:
         bproc.camera.set_intrinsics_from_K_matrix(K=K, image_height=self.camera.height, image_width=self.camera.width)
         bproc.renderer.enable_depth_output(activate_antialiasing=False)
         bproc.renderer.set_max_amount_of_samples(50)
+
+        # Collect all texture images 
+        self.texure_images = []
+        textures_path = 'resources/blenderproc/haven/textures'
+        for subdir, dirs, files in os.walk(textures_path):
+            for file in files:
+                self.texure_images.append(os.path.join(subdir, file))
         
         self.bin.load(build_convex=False)
         
@@ -71,10 +79,9 @@ class Render:
         # Make a random material
         material = bproc.material.create('RandomMat')
         
-        h, l, s = np.random.uniform(0.1, 0.9, 3)
-        r, g, b = colorsys.hls_to_rgb(h, l, s)
+        image = bpy.data.images.load(filepath=str(np.random.choice(self.texure_images)))
 
-        material.set_principled_shader_value("Base Color", [r, g, b, 1])
+        material.set_principled_shader_value("Base Color", image)
         material.set_principled_shader_value("Roughness", np.random.uniform(1, 10.0))
         material.set_principled_shader_value("Specular", np.random.uniform(0, 1))
         material.set_principled_shader_value("Metallic", np.random.uniform(0, .2))
@@ -191,7 +198,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Create an instance of the Renderer class
-    
     config = load_schema_from_file(file_path= args.config_path, data_class=ConfigData)
     
     rend = Render(config_data= config)
@@ -223,7 +229,7 @@ if __name__ == "__main__":
                 shutil.move(queue_dir + file, tmp_dir + file)
 
                 # Load the scene from the file
-                scene = load_schema_from_file(file_path= tmp_dir + file, data_class= SceneData)
+                scene = load_schema_from_file(file_path= tmp_dir + file, data_class=SceneData)
 
                 # Render the scene
                 rend.run(scene, img_amount=args.img_amount, random_background= args.random_bg)
