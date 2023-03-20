@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import  List, Optional
 
+import numpy as np
+
 @dataclass
 class PositionData():
     location: List[float]
@@ -16,5 +18,5 @@ class SceneData():
     config_path: str
     comps: List[ElementData]
     bin: ElementData
-    cameras: Optional[List[PositionData]]
+    cameras: Optional[List[List[List[float]]]]
     

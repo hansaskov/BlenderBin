@@ -1,3 +1,4 @@
+# bin_simulator.py
 import blenderproc as bproc
 
 import os
