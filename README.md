@@ -27,7 +27,7 @@ You have not install blenderproc, but we need some extra dependencies inside the
 blenderproc pip install open3d dacite 
 ```
 
-To run the rendering with random background download the haven collection. To run without a random backround enable the `--no-random-bg` flag
+To run the rendering with random background or a random texture download the haven collection. To run without a random backround enable the `--no-random-bg` flag.
 
 ``` bash
 blenderproc download haven resources/blenderproc/haven
@@ -68,6 +68,7 @@ To use your own objects, you will need a 3D model of a box or environment and a 
             "name" : "ape",
             "path" : "./3d_models/comp/ape.obj",
             "random_color" : true,
+            "random_texture": false,
             "mm_2_m": true
         }
     ],
@@ -76,6 +77,7 @@ To use your own objects, you will need a 3D model of a box or environment and a 
         {
             "path" : "./3d_models/bins/square_box.obj",
             "random_color" : false, 
+            "random_texture": true,
             "mm_2_m": true,
             "dimensions": [
                 176,
@@ -95,6 +97,8 @@ To use your own objects, you will need a 3D model of a box or environment and a 
       }
 }
 ```
+
+Do note that "random_texture" overrides the "random_color", as the random texture is higher priority.
 
 # Program Architecture
 We have split the render and simulator apart as it makes it easier to scale the simulation and rendering independently of each other. The flow of data can be described from the image below. 

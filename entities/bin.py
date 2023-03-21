@@ -9,6 +9,7 @@ class Bin():
         self.name = data.name
         self.path = data.path
         self.random_color = data.random_color
+        self.random_texture = data.random_texture
         self.mm_2_m = data.mm_2_m
         self.dimensions = data.dimensions
 

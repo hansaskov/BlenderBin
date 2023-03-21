@@ -76,13 +76,20 @@ class Render:
         self.light.set_color([1, 1, 1])
         self.light.set_energy(np.random.uniform(0.5, 1))
 
-    def randomize_materials(self):
+    def randomize_materials(self, random_texture):
         # Make a random material
         material = bproc.material.create('RandomMat')
         
-        image = bpy.data.images.load(filepath=str(np.random.choice(self.texure_images)))
+        if random_texture:
+            # Assign a random texture
+            image = bpy.data.images.load(filepath=str(np.random.choice(self.texure_images)))
+            material.set_principled_shader_value("Base Color", image)
+        else:
+            # Assign a random color
+            h, l, s = np.random.uniform(0.1, 0.9, 3)
+            r, g, b = colorsys.hls_to_rgb(h, l, s)
+            material.set_principled_shader_value("Base Color", [r, g, b, 1])
 
-        material.set_principled_shader_value("Base Color", image)
         material.set_principled_shader_value("Roughness", np.random.uniform(1, 10.0))
         material.set_principled_shader_value("Specular", np.random.uniform(0, 1))
         material.set_principled_shader_value("Metallic", np.random.uniform(0, .2))
@@ -129,7 +136,7 @@ class Render:
 
     def run(self, scene: SceneData, random_background = True, img_amount = 4, random_camera_positions = True) -> List[PositionData]:
         
-        # set bin location
+        # Set bin location
         for bin in self.bins:
             if bin.name == scene.bin.name:
                 bin.from_element(scene.bin.pos[0])
@@ -141,14 +148,14 @@ class Render:
                     comp.from_element(element.pos)
                     
         # Randomize material for bin
-        if self.bin.random_color:
-            material = self.randomize_materials()
+        if self.bin.random_color or self.bin.random_texture:
+            material = self.randomize_materials(self.bin.random_texture)
             self.bin.obj.replace_materials(material)
 
         # Randomize material for components.
         for comp in self.components:
-            if comp.random_color:
-                material = self.randomize_materials()
+            if comp.random_color or comp.random_texture:
+                material = self.randomize_materials(comp.random_texture)
                 for comp in comp.obj_list:
                     comp.replace_materials(material)
                     

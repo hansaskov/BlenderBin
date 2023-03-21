@@ -3,17 +3,19 @@
     "components": [
         {
             "name" : "coffee_cup",
-            "obj_id": 1,
+            "obj_id" : 1,
             "path" : "./3d_models/comp/coffee_cup.ply",
             "random_color" : false,
-            "mm_2_m": true
+            "random_texture" : false,
+            "mm_2_m" : true
         },
         {
             "name" : "ape",
-            "obj_id": 2,
+            "obj_id" : 2,
             "path" : "./3d_models/comp/ape.obj",
             "random_color" : true,
-            "mm_2_m": true
+            "random_texture" : false,
+            "mm_2_m" : true
         }
     ],
 
@@ -22,6 +24,7 @@
             "name" : "box_bin",
             "path" : "./3d_models/bins/boxbin.obj",
             "random_color" : true, 
+            "random_texture" : true,
             "mm_2_m": true,
             "dimensions": [
                 420,

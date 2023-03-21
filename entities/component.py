@@ -12,6 +12,7 @@ class Component():
         self.obj_id = data.obj_id
         self.path = data.path
         self.random_color = data.random_color
+        self.random_texture = data.random_texture
         self.mm_2_m = data.mm_2_m
       
     def load(self, build_convex: bool, downsample_mesh = False): 
