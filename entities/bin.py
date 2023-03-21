@@ -30,6 +30,15 @@ class Bin():
             self.obj.enable_rigidbody(active= False, collision_shape="COMPOUND", friction = 100.0, linear_damping = 0.99, angular_damping = 0.99)
             self.obj.build_convex_decomposition_collision_shape(vhacd_path='resources/vhacd', cache_dir='resources/vhacd/decomp_cache/')
         
+        # Check if mesh has a valid UV-mapping
+        if not self.obj.has_uv_mapping:
+            # Add UV-mapping
+            self.obj.add_uv_mapping("smart")
+
+        # Use vertex color for texturing
+        for mat in self.obj.get_materials():
+            mat.map_vertex_color()
+
         # Scale down
         if self.mm_2_m:
             self.obj.set_scale([1/1000, 1/1000, 1/1000])

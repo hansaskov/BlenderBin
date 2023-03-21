@@ -24,6 +24,11 @@ class Component():
         # Load mesh
         self.obj = loader.load_obj(self.path)[0]
 
+        # Check if mesh has a valid UV-mapping
+        if not self.obj.has_uv_mapping:
+            # Add UV-mapping
+            self.obj.add_uv_mapping("smart")
+
         # Use vertex color for texturing
         for mat in self.obj.get_materials():
             mat.map_vertex_color()

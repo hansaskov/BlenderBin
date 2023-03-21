@@ -13,8 +13,8 @@
             "name" : "ape",
             "obj_id" : 2,
             "path" : "./3d_models/comp/ape.obj",
-            "random_color" : true,
-            "random_texture" : false,
+            "random_color" : false,
+            "random_texture" : true,
             "mm_2_m" : true
         }
     ],
