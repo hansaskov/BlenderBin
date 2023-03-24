@@ -4,7 +4,7 @@ import open3d as o3d
 import numpy as np
 
 # Reduce vertecies in mesh for simulation
-def get_downsampled_mesh( input_file: str, num_of_triangles: int = 2048, cache_folder: str = "./resources/obj_cache/", ):
+def get_downsampled_mesh( input_file: str, num_of_triangles: int = 8196, cache_folder: str = "./resources/obj_cache/", ):
 
     # Load in mesh
     mesh_in = o3d.io.read_triangle_mesh(input_file)
