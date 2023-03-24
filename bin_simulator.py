@@ -149,6 +149,6 @@ comp_amount_list = np.random.randint(low=low, high=high, size=size)
 comp_amount_list.sort()
 
 for comp_amount in comp_amount_list:
-    simulator.run(comp_amount, use_walls= True)
+    simulator.run(comp_amount, use_walls= False)
     scene = simulator.to_scene()
     save_schema_to_folder(data= scene, folder_path= "./resources/simulations/queue")
