@@ -132,7 +132,7 @@ class Simulator:
 parser = argparse.ArgumentParser()
 parser.add_argument('--comp-amount-min', nargs='?', default='1', help='The min amount of components that should be in the bin')
 parser.add_argument('--comp-amount-max', nargs='?', default='15', help='The max amount of components that can be in the bin')
-parser.add_argument('--number-of-runs',  nargs='?', default='5', help='The number of simulations you would like to do')
+parser.add_argument('--runs',  nargs='?', default='5', help='The number of simulations you would like to do')
 parser.add_argument('--config-path',     nargs='?', default='config.json', help='filepath to configuration JSON file')
 args = parser.parse_args()
 
@@ -143,12 +143,12 @@ simulator = Simulator(config_path= config_file, config_data= config_data)
 
 low = int(args.comp_amount_min)
 high= int(args.comp_amount_max)
-size= int(args.number_of_runs)
+size= int(args.runs)
 
 comp_amount_list = np.random.randint(low=low, high=high, size=size)
 comp_amount_list.sort()
 
 for comp_amount in comp_amount_list:
-    simulator.run(comp_amount, use_walls= False)
+    simulator.run(comp_amount, use_walls= True)
     scene = simulator.to_scene()
     save_schema_to_folder(data= scene, folder_path= "./resources/simulations/queue")
