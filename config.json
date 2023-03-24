@@ -1,20 +1,20 @@
 { 
-    "dataset_name": "blenderbin_test",
+    "dataset_name": "ic_bin",
     "components": [
         {
-            "name" : "coffee_cup",
+            "name" : "obj_000001",
             "obj_id" : 1,
-            "path" : "./3d_models/comp/coffee_cup.ply",
+            "path" : "./3d_models/bop/icbin/models/obj_000001.ply",
             "random_color" : false,
             "random_texture" : false,
             "mm_2_m" : true
         },
         {
-            "name" : "ape",
+            "name" : "obj_000002",
             "obj_id" : 2,
-            "path" : "./3d_models/comp/ape.obj",
+            "path" : "./3d_models/bop/icbin/models/obj_000002.ply",
             "random_color" : false,
-            "random_texture" : true,
+            "random_texture" : false,
             "mm_2_m" : true
         }
     ],
