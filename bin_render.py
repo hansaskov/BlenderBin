@@ -248,7 +248,7 @@ if __name__ == "__main__":
                 scene = load_schema_from_file(file_path= tmp_dir + file, data_class=SceneData)
 
                 # Render the scene
-                rend.run(scene, img_amount=args.img_amount, random_background= args.random_bg, random_camera_positions = args.random_cam)
+                rend.run(scene, img_amount= int(args.img_amount), random_background= args.random_bg, random_camera_positions = args.random_cam)
                 
                 # Save scene to complete folder (with new camera positions)
                 save_schema_to_folder(scene, complete_dir)
