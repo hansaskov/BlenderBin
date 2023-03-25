@@ -99,7 +99,7 @@ class Simulator:
             objects_to_sample= self.get_all_comp_objs(),
             sample_pose_func=self.sample_pose,
             objects_to_check_collisions=self.get_all_comp_objs() + [self.bin.obj] + self.walls.planes,
-            max_tries= 300,
+            max_tries= 1000,
             mode_on_failure='last_pose',
         )
         
@@ -107,8 +107,8 @@ class Simulator:
         if use_walls: 
             # Run the physics simulation without
             bproc.object.simulate_physics(
-            min_simulation_time=1,
-            max_simulation_time=2,
+            min_simulation_time=2,
+            max_simulation_time=3,
             check_object_interval= 0.5,
             object_stopped_location_threshold = 0.01,
             object_stopped_rotation_threshold = 5,
@@ -120,8 +120,8 @@ class Simulator:
             
         # Run the physics simulation without
         bproc.object.simulate_physics_and_fix_final_poses(
-            min_simulation_time=2,
-            max_simulation_time=3,
+            min_simulation_time=0.99,
+            max_simulation_time=1,
             check_object_interval= 0.5,
             object_stopped_location_threshold = 0.01,
             object_stopped_rotation_threshold = 5,
@@ -133,6 +133,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--comp-amount-min', nargs='?', default='1', help='The min amount of components that should be in the bin')
 parser.add_argument('--comp-amount-max', nargs='?', default='15', help='The max amount of components that can be in the bin')
 parser.add_argument('--runs',  nargs='?', default='5', help='The number of simulations you would like to do')
+parser.add_argument('--walls', action=argparse.BooleanOptionalAction, default=False, help="Simulate twice, first with walls, afterwards without")
 parser.add_argument('--config-path',     nargs='?', default='config.json', help='filepath to configuration JSON file')
 args = parser.parse_args()
 
@@ -149,6 +150,6 @@ comp_amount_list = np.random.randint(low=low, high=high, size=size)
 comp_amount_list.sort()
 
 for comp_amount in comp_amount_list:
-    simulator.run(comp_amount, use_walls= False)
+    simulator.run(comp_amount, use_walls= args.walls)
     scene = simulator.to_scene()
     save_schema_to_folder(data= scene, folder_path= "./resources/simulations/queue")
