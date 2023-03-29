@@ -9,7 +9,7 @@ sys.path.append(myDir)
 
 from file_schema.scene import SceneData
 from file_schema.config import ConfigData
-from file_schema.schema_logic import load_schema_from_file, save_schema_to_folder
+from file_schema.schema_logic import load_schema_from_file, save_scene, save_schema_to_folder
 from blenderproc.python.types.MeshObjectUtility import MeshObject
 from entities.component import Component
 from entities.bin import Bin
@@ -152,4 +152,4 @@ comp_amount_list.sort()
 for comp_amount in comp_amount_list:
     simulator.run(comp_amount, use_walls= args.walls)
     scene = simulator.to_scene()
-    save_schema_to_folder(data_class= scene, folder_path= "./resources/simulations/queue")
+    save_scene(scene= scene, config= config_data, folder_path= "./resources/simulations")

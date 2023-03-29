@@ -7,7 +7,7 @@ sys.path.append(myDir)
 
 from file_schema.scene import PositionData, SceneData
 from file_schema.config import ConfigData
-from file_schema.schema_logic import load_schema_from_file, save_schema_to_folder
+from file_schema.schema_logic import get_next_sim_folder, load_config_from_folder, load_schema_from_file, save_schema_to_folder
 from entities.component import Component
 from entities.bin import Bin
 from typing import List
@@ -206,27 +206,24 @@ class Render:
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config-path',      nargs='?', default='config.json', help='filepath to configuration JSON file')
+    parser.add_argument('--sim-path',      nargs='?', default='./resources/simulations', help='path the the directory with the simulations')
     parser.add_argument('--img-amount', nargs='?', default=4, help="Amount of images per scene")
     parser.add_argument('--random-cam', action=argparse.BooleanOptionalAction, default=True, help="Use the previous camera positions")
     parser.add_argument('--random-bg', action=argparse.BooleanOptionalAction, default=True, help="Add a random background to the skybox from the haven benchmark")
 
     args = parser.parse_args()
 
+    simulation_path = args.sim_path
+    
+    folder_path = get_next_sim_folder(folder_path= simulation_path)
+    
+    config = load_config_from_folder(folder_path)
     # Create an instance of the Renderer class
-    config = load_schema_from_file(file_path= args.config_path, data_class=ConfigData)
-    
     rend = Render(config_data=config)
-    
-    # Define the relative paths of the directories
-    queue_dir = "./resources/simulations/queue/"
-    tmp_dir = "./resources/simulations/tmp/"
-    complete_dir = "./resources/simulations/complete/"
-    
-    # Create the folder if it does not exist
-    for dir in [tmp_dir, complete_dir, queue_dir]:
-        if not os.path.exists(dir):
-            os.makedirs(dir)
+
+    complete_dir = folder_path + "/complete/"
+    queue_dir = folder_path + "/queue/"
+    tmp_dir = folder_path + "/tmp/"
 
     i = 0
     try:
