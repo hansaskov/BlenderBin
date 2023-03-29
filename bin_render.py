@@ -33,7 +33,7 @@ class Render:
         self.config_data = config_data
         self.camera = config_data.camera
         self.components = [ Component(comp_data) for comp_data in config_data.components ] 
-        self.bins = [ Bin(bin_data) for bin_data in config_data.bins ]
+        self.bins = [Bin(bin_data) for bin_data in config_data.bins ]
         self.bin = self.bins[0]
 
         K = [
@@ -57,7 +57,7 @@ class Render:
         self.bin.load(build_convex=False)
         
         for entities in self.components:
-            entities.load(build_convex=False, downsample_mesh= False)
+            entities.load(build_convex=False, downsample_mesh=False)
 
     def get_all_comp_objs(self): 
         return sum([comp.obj_list for comp in self.components], [])
@@ -106,11 +106,11 @@ class Render:
 
         # Sample random location
         location = bproc.sampler.shell(
-            center=[0, 0, 1.64],
-            radius_min=0.05,
-            radius_max=0.2,
-            elevation_min=-20,
-            elevation_max=90,
+            center=[0, 0, self.camera.height_position],
+            radius_min=self.camera.xy_position_variance_min,
+            radius_max=self.camera.xy_position_variance_max,
+            elevation_min=self.camera.elevation_variance_min,
+            elevation_max=self.camera.elevation_variance_max,
             uniform_volume=True
         )
 
@@ -216,7 +216,7 @@ if __name__ == "__main__":
     # Create an instance of the Renderer class
     config = load_schema_from_file(file_path= args.config_path, data_class=ConfigData)
     
-    rend = Render(config_data= config)
+    rend = Render(config_data=config)
     
     # Define the relative paths of the directories
     queue_dir = "./resources/simulations/queue/"

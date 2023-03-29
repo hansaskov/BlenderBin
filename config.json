@@ -40,6 +40,11 @@
         "fx": 1778.1134033203125,
         "fy": 1778.0201424523975,
         "height": 540,
-        "width": 720
+        "width": 720,
+        "xy_position_variance_min": 0.05,
+        "xy_position_variance_max": 0.2,
+        "elevation_variance_max": 90,
+        "elevation_variance_min": -20,
+        "height_position": 1.64
       }
 }

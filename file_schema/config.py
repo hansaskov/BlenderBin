@@ -28,6 +28,11 @@ class CameraData():
     fy: float
     height: int 
     width: int 
+    xy_position_variance_min: float
+    xy_position_variance_max: float
+    elevation_variance_max: int
+    elevation_variance_min: int
+    height_position: float
     
 @dataclass
 class ConfigData():
