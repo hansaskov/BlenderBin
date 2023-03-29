@@ -21,22 +21,30 @@ def default(obj):
             return obj.item()
     raise TypeError('Unknown type:', type(obj))
     
+# Convert dataclass to a hash
+def hash_data_class(data_class: Type[T]):
+    # Convert dataclass to bytes
+    d_str = json.dumps(asdict(data_class), default= default, sort_keys=True).encode('utf-8')
+    # Hash the bytes and return as string of hexdecimal digits
+    hash = hashlib.sha1(d_str).hexdigest()
+    
+    return hash
+
 def load_schema_from_file(file_path, data_class: Type[T] ):
     with open(file_path, 'r') as f:
         scene_dict = json.load(f)
     data: data_class = from_dict(data_class=data_class, data=scene_dict) 
     return data
 
-def save_schema_to_file(data: Type[T], file_path: str):
+def save_schema_to_file(data_class: Type[T], file_path: str):
     with open(file_path, 'w') as f:
-        dictionary = asdict(data)
+        dictionary = asdict(data_class)
         json.dump(dictionary, f, default=default,  indent=4)
     
-def save_schema_to_folder(data: ConfigData | SceneData, folder_path: str):
+
+def save_schema_to_folder(data_class: Type[T], folder_path: str):
     
-    # Create unique file name        
-    d_str = json.dumps(asdict(data), default= default, sort_keys=True).encode('utf-8')
-    hash = hashlib.sha1(d_str).hexdigest()
+    hash = hash_data_class(data_class)
     filename = hash[:8] + ".json"
     
     # Create the folder if it does not exist 
@@ -46,7 +54,7 @@ def save_schema_to_folder(data: ConfigData | SceneData, folder_path: str):
     file_path = folder_path + "/" + filename
     
     with open(file_path, 'w') as f:
-        data = asdict(data)
-        json.dump(data, f, default=default, indent=4)
+        data_class = asdict(data_class)
+        json.dump(data_class, f, default=default, indent=4)
         
         

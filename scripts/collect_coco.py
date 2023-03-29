@@ -76,10 +76,10 @@ new_coco_data = CocoData(
 img_id_count = 0
 ann_id_count = 0
 
-for data, path in zip(coco_data_list, coco_paths):
+for data_class, path in zip(coco_data_list, coco_paths):
     scene_path = folder_difference(path, out_coco_filepath )
-    for image in data.images:
-        annotations = list(filter(lambda elem: elem.image_id == image.id, data.annotations))
+    for image in data_class.images:
+        annotations = list(filter(lambda elem: elem.image_id == image.id, data_class.annotations))
         image.id = img_id_count
         image.file_name = scene_path + "/" + image.file_name
         for ann in annotations: 
@@ -94,5 +94,5 @@ for data, path in zip(coco_data_list, coco_paths):
 
 
 print("Saving to disk, please wait")
-save_schema_to_file(data=new_coco_data, file_path=out_coco_filepath)
+save_schema_to_file(data_class=new_coco_data, file_path=out_coco_filepath)
 
