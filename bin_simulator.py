@@ -152,4 +152,4 @@ comp_amount_list.sort()
 for comp_amount in comp_amount_list:
     simulator.run(comp_amount, use_walls= args.walls)
     scene = simulator.to_scene()
-    save_schema_to_folder(data= scene, folder_path= "./resources/simulations/queue")
+    save_schema_to_folder(data_class= scene, folder_path= "./resources/simulations/queue")
