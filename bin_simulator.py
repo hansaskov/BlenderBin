@@ -107,11 +107,11 @@ class Simulator:
         if use_walls: 
             # Run the physics simulation without
             bproc.object.simulate_physics(
-                min_simulation_time=2,
-                max_simulation_time=3,
+                min_simulation_time=1,
+                max_simulation_time=2,
                 check_object_interval= 0.5,
-                object_stopped_location_threshold = 1,
-                object_stopped_rotation_threshold = 5,
+                object_stopped_location_threshold = 0.01,
+                object_stopped_rotation_threshold = 0.05,
                 substeps_per_frame = 30,
                 solver_iters= 20,
             ) 
@@ -121,10 +121,10 @@ class Simulator:
         # Run the physics simulation without
         bproc.object.simulate_physics_and_fix_final_poses(
             min_simulation_time=0.99,
-            max_simulation_time=1,
+            max_simulation_time=1.5,
             check_object_interval= 0.5,
-            object_stopped_location_threshold = 1,
-            object_stopped_rotation_threshold = 5,
+            object_stopped_location_threshold = 0.001,
+            object_stopped_rotation_threshold = 0.05,
             substeps_per_frame = 30,
             solver_iters= 20,
         )  
