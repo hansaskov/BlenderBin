@@ -71,7 +71,7 @@ class Simulator:
         obj.set_rotation_euler(bproc.sampler.uniformSO3())
         obj.set_location(np.random.uniform(
             [ -x*0.35, -y*0.35, z * 1.1 ], 
-            [ x*0.35,  y*0.35,  z * 5 * volume_frac  ]
+            [ x*0.35,  y*0.35,  z * 10 * volume_frac  ]
         ))
         
     def get_all_comp_objs(self): 
@@ -107,13 +107,13 @@ class Simulator:
         if use_walls: 
             # Run the physics simulation without
             bproc.object.simulate_physics(
-            min_simulation_time=2,
-            max_simulation_time=3,
-            check_object_interval= 0.5,
-            object_stopped_location_threshold = 0.01,
-            object_stopped_rotation_threshold = 5,
-            substeps_per_frame = 30,
-            solver_iters= 20,
+                min_simulation_time=2,
+                max_simulation_time=3,
+                check_object_interval= 0.5,
+                object_stopped_location_threshold = 1,
+                object_stopped_rotation_threshold = 5,
+                substeps_per_frame = 30,
+                solver_iters= 20,
             ) 
         
         self.walls.set_home_pos()
@@ -123,7 +123,7 @@ class Simulator:
             min_simulation_time=0.99,
             max_simulation_time=1,
             check_object_interval= 0.5,
-            object_stopped_location_threshold = 0.01,
+            object_stopped_location_threshold = 1,
             object_stopped_rotation_threshold = 5,
             substeps_per_frame = 30,
             solver_iters= 20,

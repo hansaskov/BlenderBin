@@ -1,5 +1,5 @@
 # Introduction
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hansaskov/BlenderBin/blob/master/quickstart.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hansaskov/BlenderBin/blob/master/examples/colab.ipynb)
 
 Simulate many objects falling in a bin and create high detailed annotated images with the BlenderBin repository.
 

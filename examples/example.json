@@ -1,0 +1,46 @@
+{
+  "dataset_name": "ic_bin",
+  "components": [
+    {
+      "name": "obj_000001",
+      "obj_id": 1,
+      "path": "./3d_models/bop/icbin/models/obj_000001.ply",
+      "random_color": false,
+      "random_texture": false,
+      "mm_2_m": true
+    },
+    {
+      "name": "obj_000002",
+      "obj_id": 2,
+      "path": "./3d_models/bop/icbin/models/obj_000002.ply",
+      "random_color": false,
+      "random_texture": false,
+      "mm_2_m": true
+    }
+  ],
+
+  "bins": [
+    {
+      "name": "box_bin",
+      "path": "./3d_models/bins/boxbin.obj",
+      "random_color": true,
+      "random_texture": false,
+      "mm_2_m": true,
+      "dimensions": [420, 300, 100]
+    }
+  ],
+
+  "camera": {
+    "cx": 355.29037487506866,
+    "cy": 290.31518501860995,
+    "fx": 1778.1134033203125,
+    "fy": 1778.0201424523975,
+    "height": 540,
+    "width": 720,
+    "xy_position_variance_min": 0.05,
+    "xy_position_variance_max": 0.2,
+    "elevation_variance_max": 90,
+    "elevation_variance_min": -20,
+    "height_position": 1.64
+  }
+}
