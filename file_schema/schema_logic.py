@@ -151,8 +151,8 @@ def save_scene(scene: SceneData, config: ConfigData, folder_path: str):
     folder_path = f"{folder_path}{config_name}"
 
     for dir in ["complete", "queue", "tmp"]:
-        if not os.path.exists(f"{folder_path}{dir}"):
-            os.makedirs(f"{folder_path}{dir}")
+        if not os.path.exists(f"{folder_path}/{dir}"):
+            os.makedirs(f"{folder_path}/{dir}")
 
     queue_folder_path = f"{folder_path}/queue"
     save_schema_to_folder(scene, queue_folder_path)
