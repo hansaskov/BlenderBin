@@ -35,7 +35,7 @@ class Component():
 
         # Enable convex decomposition
         if build_convex:
-            self.obj.enable_rigidbody(active= True, collision_shape="COMPOUND", friction = 95.0, linear_damping = 0.95, angular_damping = 0.95)
+            self.obj.enable_rigidbody(active= True, collision_shape="COMPOUND", friction = 2.5, linear_damping = 0.5, angular_damping = 0.2)
             self.obj.build_convex_decomposition_collision_shape(vhacd_path='resources/vhacd', cache_dir='resources/vhacd/decomp_cache/')
         
         # Scale component
