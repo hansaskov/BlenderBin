@@ -35,12 +35,12 @@
     ],
 
     "camera": {
-        "cx": 355.29037487506866,
-        "cy": 290.31518501860995,
-        "fx": 1778.1134033203125,
-        "fy": 1778.0201424523975,
-        "height": 540,
-        "width": 720,
+        "cx": 316.0,
+        "cy": 244.0,
+        "fx": 550.0,
+        "fy": 540.0,
+        "height": 480,
+        "width": 640,
         "xy_position_variance_min": 0.05,
         "xy_position_variance_max": 0.2,
         "elevation_variance_max": 90,
