@@ -21,6 +21,16 @@ class BinData():
     dimensions: List[float]
 
 @dataclass
+class Positioning():
+    height: float
+    radius_min: float
+    radius_max: float
+    angle_min: int
+    angle_max: int
+    
+    
+
+@dataclass
 class CameraData():
     cx: float
     cy: float
@@ -28,11 +38,8 @@ class CameraData():
     fy: float
     height: int 
     width: int 
-    xy_position_variance_min: float
-    xy_position_variance_max: float
-    elevation_variance_max: int
-    elevation_variance_min: int
-    height_position: float
+    positioning: Positioning
+
     
 @dataclass
 class ConfigData():

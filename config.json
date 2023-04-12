@@ -41,10 +41,12 @@
         "fy": 540.0,
         "height": 480,
         "width": 640,
-        "xy_position_variance_min": 0.05,
-        "xy_position_variance_max": 0.2,
-        "elevation_variance_max": 90,
-        "elevation_variance_min": -20,
-        "height_position": 1.64
+        "positioning": {
+            "radius_min": 0.01,
+            "radius_max": 0.5,
+            "angle_min": -45,
+            "angle_max": 90,
+            "height": 0.7
+        }
       }
 }

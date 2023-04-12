@@ -46,7 +46,7 @@ class Bin():
         # Set at middle
         self.obj.set_location([0, 0, 0])
         self.obj.set_shading_mode('auto')
-        self.obj.set_cp("category_id", "bin")
+        self.obj.set_cp("category_id", 0)
         
 
     def to_element(self):

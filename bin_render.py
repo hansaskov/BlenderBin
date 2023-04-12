@@ -1,6 +1,7 @@
 import blenderproc as bproc
 import sys
 import os
+from blenderproc.python.camera.CameraUtility import bpy
 
 myDir = os.getcwd()
 sys.path.append(myDir)
@@ -19,17 +20,22 @@ import numpy as np
 
 import time
 import shutil
-import bpy
+from enum import Enum
 
 
 haven_path = "resources/blenderproc/haven"
 output_dir = "data"
 
 
+class WriterType(Enum):
+  COCO = "COCO"
+  BOP = "BOP"
+
 class Render:
                            
-    def __init__(self, config_data: ConfigData):
+    def __init__(self, config_data: ConfigData, writer_type: WriterType):
         bproc.init()
+        self.writer_type = writer_type
         self.config_data = config_data
         self.camera = config_data.camera
         self.components = [ Component(comp_data) for comp_data in config_data.components ] 
@@ -43,9 +49,7 @@ class Render:
         ]
         
         self.light = bproc.types.Light()
-        bproc.camera.set_intrinsics_from_K_matrix(K=K, image_height=self.camera.height, image_width=self.camera.width)
-        bproc.renderer.enable_depth_output(activate_antialiasing=False)
-        bproc.renderer.set_max_amount_of_samples(50)
+
 
         # Collect all texture images 
         self.texure_images = []
@@ -58,6 +62,14 @@ class Render:
         
         for entities in self.components:
             entities.load(build_convex=False, downsample_mesh=False)
+            
+        
+        bproc.camera.set_intrinsics_from_K_matrix(K=K, image_height=self.camera.height, image_width=self.camera.width)
+        bproc.renderer.enable_depth_output(activate_antialiasing=False)
+        bproc.renderer.set_max_amount_of_samples(50)
+        if (writer_type == WriterType.COCO ):
+            bproc.renderer.enable_normals_output()
+            bproc.renderer.enable_segmentation_output(map_by=["category_id", "instance", "name"])
 
     def get_all_comp_objs(self): 
         return sum([comp.obj_list for comp in self.components], [])
@@ -106,11 +118,11 @@ class Render:
 
         # Sample random location
         location = bproc.sampler.shell(
-            center=[0, 0, self.camera.height_position],
-            radius_min=self.camera.xy_position_variance_min,
-            radius_max=self.camera.xy_position_variance_max,
-            elevation_min=self.camera.elevation_variance_min,
-            elevation_max=self.camera.elevation_variance_max,
+            center=[0, 0, self.camera.positioning.height],
+            radius_min=self.camera.positioning.radius_min,
+            radius_max=self.camera.positioning.radius_max,
+            elevation_min=self.camera.positioning.angle_min,
+            elevation_max=self.camera.positioning.angle_max,
             uniform_volume=True
         )
 
@@ -181,19 +193,33 @@ class Render:
             # Render Pipeline
             data = bproc.renderer.render()
 
+            
+            if (self.writer_type == WriterType.COCO) :
+            # Save data in Coco format
+                bproc.writer.write_coco_annotations(
+                    output_dir=os.path.join(output_dir),
+                    instance_segmaps=data["instance_segmaps"],
+                    instance_attribute_maps=data["instance_attribute_maps"],
+                    colors=data['colors'],
+                    color_file_format="JPEG",
+                    append_to_existing_output=True,
+                    mask_encoding_format="polygon",
+                    
+                )
+            elif (self.writer_type == WriterType.BOP) :
             # Save data in the bop format
-            bproc.writer.write_bop(
-                output_dir=os.path.join(output_dir),
-                dataset=self.config_data.dataset_name,
-                target_objects= all_visible_comp ,
-                colors=data['colors'],
-                depths=data['depth'],
-                color_file_format="JPEG",
-                ignore_dist_thres=50,
-                append_to_existing_output=True,
-                save_world2cam=True,
-                depth_scale=0.01,
-            )
+                bproc.writer.write_bop(
+                    output_dir=os.path.join(output_dir),
+                    dataset=self.config_data.dataset_name,
+                    target_objects= all_visible_comp ,
+                    colors=data['colors'],
+                    depths=data['depth'],
+                    color_file_format="JPEG",
+                    ignore_dist_thres=50,
+                    append_to_existing_output=True,
+                    save_world2cam=True,
+                    depth_scale=0.01,
+                )
             
             # Reset keyframe and restart.
             bproc.utility.reset_keyframes()
@@ -210,16 +236,18 @@ if __name__ == "__main__":
     parser.add_argument('--img-amount', nargs='?', default=4, help="Amount of images per scene")
     parser.add_argument('--random-cam', action=argparse.BooleanOptionalAction, default=True, help="Use the previous camera positions")
     parser.add_argument('--random-bg', action=argparse.BooleanOptionalAction, default=True, help="Add a random background to the skybox from the haven benchmark")
+    parser.add_argument('--writer', type=WriterType, default=WriterType.BOP, choices=list(WriterType))
 
     args = parser.parse_args()
 
+    writer = args.writer
     simulation_path = args.sim_path
     
     folder_path = get_next_sim_folder(folder_path= simulation_path)
     
     config = load_config_from_folder(folder_path)
     # Create an instance of the Renderer class
-    rend = Render(config_data=config)
+    rend = Render(config_data=config, writer_type= writer)
 
     complete_dir = folder_path + "/complete/"
     queue_dir = folder_path + "/queue/"
