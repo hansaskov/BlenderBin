@@ -1,16 +1,19 @@
+import sys
+import os
+
+myDir = os.getcwd()
+sys.path.append(myDir)
+
 import resources.bop_toolkit.scripts.calc_gt_masks as masks
 import resources.bop_toolkit.scripts.calc_gt_info as info
 import resources.bop_toolkit.scripts.calc_gt_coco as coco
 import resources.bop_toolkit.scripts.calc_model_info as model
-from file_schema.config import load_config_from_file
+from file_schema.config import ConfigData
+from file_schema.schema_logic import load_schema_from_file
 
 import argparse
-import sys
-import os
-import open3d as o3d
 
-myDir = os.getcwd()
-sys.path.append(myDir)
+import open3d as o3d
 
 
 def save_obj_as_ply(obj_path, save_folder, number):
@@ -37,7 +40,7 @@ if __name__ == '__main__':
     
     
     
-    config = load_config_from_file(args.config)
+    config = load_schema_from_file(args.config, ConfigData)
     
     dir = "./data/" + config.dataset_name + "/models/"
     if not os.path.exists(dir):
@@ -50,8 +53,8 @@ if __name__ == '__main__':
     par = DataParams(
         data_path=  "data",
         name=       config.dataset_name,
-        split=      "train",
-        split_type= "pbr",
+        split=      "val",
+        split_type= None,
         obj_ids=    [comp.obj_id for comp in config.components],
         sym_ids=        "",
         height=     config.camera.height,
