@@ -29,7 +29,6 @@ class Positioning():
     angle_max: int
     
     
-
 @dataclass
 class CameraData():
     cx: float
