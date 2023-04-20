@@ -2,6 +2,7 @@ import blenderproc as bproc
 import sys
 import os
 from blenderproc.python.camera.CameraUtility import bpy
+from blenderproc.python.types.MeshObjectUtility import MeshObject
 
 myDir = os.getcwd()
 sys.path.append(myDir)
@@ -52,7 +53,7 @@ class Render:
             for file in files:
                 self.texure_images.append(os.path.join(subdir, file))
         
-        self.bin.load(build_convex=True)
+        self.bin.load(build_convex=False)
         
         for entities in self.components:
             entities.load(build_convex=False, downsample_mesh=False)
@@ -174,28 +175,30 @@ class Render:
             scene.cameras = [self.calculate_camera_pose(self.bin.dimensions) for i in range(img_amount) ]
         
         # Render the scene for each camera viewpoint and save it in the bop format
+        all_visible_comp: set[MeshObject] = set()
+        
         for cam2world in scene.cameras:
-
             bproc.camera.add_camera_pose(cam2world)
-            all_visible_comp = self.get_visible_components_from_camera(cam2world)
+            visible_comps = self.get_visible_components_from_camera(cam2world)
+            all_visible_comp = all_visible_comp.union(visible_comps)
             
-            # Render Pipeline
-            data = bproc.renderer.render()
-            
-            bproc.writer.write_bop(
-                output_dir=os.path.join(output_dir),
-                dataset=self.config_data.dataset_name,
-                target_objects=  all_visible_comp,
-                colors=data['colors'],
-                depths=data['depth'],
-                color_file_format="JPEG",
-                append_to_existing_output=True,
-                save_world2cam=True,
-                depth_scale=0.1, 
-                )
-            
-            # Reset keyframe and restart.
-            bproc.utility.reset_keyframes()
+        # Render Pipeline
+        data = bproc.renderer.render()
+        
+        bproc.writer.write_bop(
+            output_dir=os.path.join(output_dir),
+            dataset=self.config_data.dataset_name,
+            target_objects=  all_visible_comp,
+            colors=data['colors'],
+            depths=data['depth'],
+            color_file_format="JPEG",
+            append_to_existing_output=True,
+            save_world2cam=True,
+            depth_scale=0.1, 
+            )
+        
+        # Reset keyframe and restart.
+        bproc.utility.reset_keyframes()
         
         # Reset location. 
         for obj in self.get_all_comp_objs():
