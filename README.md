@@ -1,6 +1,6 @@
 # Introduction
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hansaskov/BlenderBin/blob/master/examples/colab.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hansaskov/BlenderBin2/blob/master/examples/colab.ipynb)
 
 Simulate many objects falling in a bin and create high detailed annotated images with the BlenderBin repository.
 
@@ -11,26 +11,20 @@ To use the BlenderBin repository, a Linux-based operating system is required. Th
 To begin, download the repository:
 
 ```bash
-git clone https://github.com/hansaskov/BlenderBin
-cd ./BlenderBin
+git clone --recurse-submodules https://github.com/hansaskov/BlenderBin2
+cd ./BlenderBin2
 ```
 
 Next, install the necessary dependencies:
 
 ```bash
-pip install -r requirements.txt
-```
-
-You have not install blenderproc, but we need some extra dependencies inside the blenderproc enviroment.
-
-```bash
-blenderproc pip install open3d dacite
+pip install -e BlenderProc
 ```
 
 To run the rendering with random background or a random texture download the haven collection. To run without a random backround enable the `--no-random-bg` flag.
 
 ```bash
-blenderproc download haven resources/blenderproc/haven
+blenderproc download haven resources/haven
 ```
 
 Note that these commands may take some time to complete.
@@ -63,36 +57,47 @@ blenderproc run bin_render.py \
 To use your own objects, you will need a 3D model of a box or environment and a 3D model of your component, in either the .ply or .obj format. These changes must be made in the config.json file.
 
 ```json
-{
-  "comp": [
-    {
-      "name": "ape",
-      "path": "./3d_models/comp/ape.obj",
-      "random_color": true,
-      "random_texture": false,
-      "mm_2_m": true
-    }
-  ],
+    "components": [
+        {
+            "name" : "obj_000001",
+            "obj_id" : 1,
+            "path" : "./3d_models/bop/icbin/models/obj_000001.ply",
+            "random_color" : false,
+            "random_texture" : false,
+            "mm_2_m" : true
+        },
+    ],
 
-  "bins": [
-    {
-      "path": "./3d_models/bins/square_box.obj",
-      "random_color": false,
-      "random_texture": true,
-      "mm_2_m": true,
-      "dimensions": [176, 156, 100]
-    }
-  ],
+    "bins" :  [
+        {
+            "name" : "box_bin",
+            "path" : "./3d_models/bins/boxbin.obj",
+            "random_color" : true, 
+            "random_texture" : true,
+            "mm_2_m": true,
+            "dimensions": [
+                420,
+                300,
+                100
+            ]
+        }
+    ],
 
-  "camera": {
-    "cx": 355.29037487506866,
-    "cy": 290.31518501860995,
-    "fx": 1778.1134033203125,
-    "fy": 1778.0201424523975,
-    "height": 540,
-    "width": 720
-  }
-}
+    "camera": {
+        "cx": 316.0,
+        "cy": 244.0,
+        "fx": 550.0,
+        "fy": 540.0,
+        "height": 480,
+        "width": 640,
+        "positioning": {
+            "radius_min": 0.01,
+            "radius_max": 0.5,
+            "angle_min": -45,
+            "angle_max": 90,
+            "height": 0.7
+        }
+      }
 ```
 
 Do note that "random_texture" overrides the "random_color", as the random texture is higher priority.
