@@ -11,7 +11,7 @@ To use the BlenderBin repository, a Linux-based operating system is required. Th
 To begin, download the repository:
 
 ```bash
-git clone https://github.com/hansaskov/BlenderBin
+git clone -b blenderproc-source --recurse-submodules https://github.com/hansaskov/BlenderBin.git
 cd ./BlenderBin
 ```
 
