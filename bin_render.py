@@ -29,8 +29,9 @@ output_dir = "data"
 
 class Render:
                            
-    def __init__(self, config_data: ConfigData):
+    def __init__(self, config_data: ConfigData, use_metadata: bool):
         bproc.init()
+        self.use_metadata = use_metadata
         self.config_data = config_data
         self.camera = config_data.camera
         self.components = [ Component(comp_data) for comp_data in config_data.components ] 
@@ -195,6 +196,7 @@ class Render:
             append_to_existing_output=True,
             save_world2cam=True,
             depth_scale=0.1, 
+            calc_mask_info_coco= self.use_metadata
             )
         
         # Reset keyframe and restart.
@@ -212,17 +214,18 @@ if __name__ == "__main__":
     parser.add_argument('--img-amount', nargs='?', default=4, help="Amount of images per scene")
     parser.add_argument('--random-cam', action=argparse.BooleanOptionalAction, default=True, help="Use the previous camera positions")
     parser.add_argument('--random-bg', action=argparse.BooleanOptionalAction, default=True, help="Add a random background to the skybox from the haven benchmark")
-
+    parser.add_argument('--metadata', action=argparse.BooleanOptionalAction, default=True, help="Calculate masks, info and coco annotations")
 
     args = parser.parse_args()
 
     simulation_path = args.sim_path
+    use_metadata = args.metadata
     
     folder_path = get_next_sim_folder(folder_path= simulation_path)
     
     config = load_config_from_folder(folder_path)
     # Create an instance of the Renderer class
-    rend = Render(config_data=config)
+    rend = Render(config_data=config, use_metadata= use_metadata)
 
     complete_dir = folder_path + "/complete/"
     queue_dir = folder_path + "/queue/"
