@@ -1,0 +1,3 @@
+[submodule "BlenderProc"]
+	path = BlenderProc
+	url = https://github.com/DLR-RM/BlenderProc.git
