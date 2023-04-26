@@ -1,8 +1,12 @@
-# Introduction
+
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hansaskov/BlenderBin/blob/master/examples/colab.ipynb)
+# Introduction
 
-Simulate many objects falling in a bin and create high detailed annotated images with the BlenderBin repository.
+Simulate objects falling in a bin and create your synthetic dataset of perfect annotated images.
+<p align="center">
+  <img  src="images/Coco-annotations.PNG">
+</p>
 
 # Dependencies
 
