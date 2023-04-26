@@ -19,10 +19,15 @@ git clone --recurse-submodules https://github.com/hansaskov/BlenderBin
 cd ./BlenderBin
 ```
 
-Next, install the necessary dependencies:
+Next, install the necessary dependencies
+First dependencies related to BlenderProc
 
 ```bash
 pip install -e BlenderProc
+```
+Then we will add somme of out dependencies to the BlenderProc environment
+```bash
+blenderproc pip install GitPython dacite open3d
 ```
 
 To run the rendering with random background or a random texture download the haven collection. To run without a random backround enable the `--no-random-bg` flag.
