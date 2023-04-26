@@ -21,7 +21,6 @@ import numpy as np
 
 import time
 import shutil
-from enum import Enum
 
 
 haven_path = "resources/haven"
@@ -62,6 +61,7 @@ class Render:
         bproc.camera.set_intrinsics_from_K_matrix(K=K, image_height=self.camera.height, image_width=self.camera.width)
         bproc.renderer.enable_depth_output(activate_antialiasing=False)
         bproc.renderer.set_max_amount_of_samples(50)
+
 
     def get_all_comp_objs(self): 
         return sum([comp.obj_list for comp in self.components], [])
@@ -196,7 +196,8 @@ class Render:
             append_to_existing_output=True,
             save_world2cam=True,
             depth_scale=0.1, 
-            calc_mask_info_coco= self.use_metadata
+            calc_mask_info_coco= self.use_metadata,
+
             )
         
         # Reset keyframe and restart.
