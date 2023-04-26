@@ -223,6 +223,10 @@ if __name__ == "__main__":
     use_metadata = args.metadata
     
     folder_path = get_next_sim_folder(folder_path= simulation_path)
+
+    if not folder_path:
+        print("No available scenes to render")
+        exit()
     
     config = load_config_from_folder(folder_path)
     # Create an instance of the Renderer class

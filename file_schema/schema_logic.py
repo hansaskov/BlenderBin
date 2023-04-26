@@ -162,7 +162,7 @@ def save_scene(scene: SceneData, config: ConfigData, folder_path: str):
         save_schema_to_file(config, config_file_path)
 
 
-def get_next_sim_folder(folder_path: str) -> str:
+def get_next_sim_folder(folder_path: str) -> str | None:
     """ Get the path of the first subdirectory in the specified folder.
 
     Args:
