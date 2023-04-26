@@ -169,15 +169,17 @@ def get_next_sim_folder(folder_path: str) -> str:
         folder_path (str): Path to the folder.
 
     Returns:
-        str: The path of the first subdirectory, or None if no subdirectories are found.
+        str: The path of the first subdirectory with files in queue, or None if no subdirectories are found.
     """
 
     config_folders = get_subdirectories(folder_path=folder_path)
 
-    if not config_folders:
-        return None
+    for folder in config_folders:
+        queue_paths = get_json_files_from_folder(folder_path=os.path.join(folder, "queue"))
+        if queue_paths:
+            return folder
 
-    return config_folders[0]
+    return None
 
 def load_config_from_folder(folder_path: str) -> ConfigData:
     """ Load the ConfigData from a JSON file in the specified folder.
