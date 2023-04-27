@@ -3,7 +3,7 @@
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hansaskov/BlenderBin/blob/master/examples/colab.ipynb)
 # Introduction
 
-Simulate objects falling in a bin and create your synthetic dataset of perfect annotated images.
+Simulate objects falling in a bin and create your synthetic dataset with perfectly annotated images.
 <p align="center">
   <img  src="images/Coco-annotations.PNG">
 </p>
@@ -25,7 +25,7 @@ First dependencies related to BlenderProc
 ```bash
 pip install -e BlenderProc
 ```
-Then we will add somme of out dependencies to the BlenderProc environment
+Then we will inject extra dependencies to the BlenderProc environment
 ```bash
 blenderproc pip install GitPython dacite open3d
 ```
