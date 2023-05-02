@@ -149,6 +149,9 @@ class Render:
         for element in scene.comps:
             for comp in self.components:
                 if comp.name == element.name:
+                    if element.pos[2] < 0: # If the component fell out of the box
+                        comp.delete() # Delete the component
+                        continue 
                     comp.from_element(element.pos)
                     
         # Randomize material for bin
