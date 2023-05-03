@@ -48,7 +48,7 @@ class Component():
         self.obj.set_shading_mode('auto')
         self.obj.set_cp("category_id", self.obj_id)
         
-        # Dreate new list of dublicate objects
+        # Create new list of duplicate objects
         self.obj_list: list[MeshObject] = [self.obj]
 
     # Dublicate obj until max is reached
@@ -80,4 +80,7 @@ class Component():
         for (position, obj) in zip(positions, self.obj_list):
             obj.set_location(position.location)
             obj.set_rotation_euler(position.orientation)
+
+    def delete(self):
+        self.obj.delete(False)
             
