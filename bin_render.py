@@ -138,7 +138,8 @@ class Render:
         
         return comp_visible
 
-    def run(self, scene: SceneData, random_background = True, img_amount = 4, random_camera_positions = True) -> List[PositionData]:
+    def run(self, scene: SceneData, 
+            random_background = True, img_amount = 4, random_camera_positions = True, include_fallen = False) -> List[PositionData]:
         
         # Set bin location
         for bin in self.bins:
@@ -149,7 +150,7 @@ class Render:
         for element in scene.comps:
             for comp in self.components:
                 if comp.name == element.name:
-                    comp.from_element(element.pos)
+                    comp.from_element(element.pos, include_fallen = include_fallen)
                     
         # Randomize material for bin
         if self.bin.random_color or self.bin.random_texture:
@@ -216,11 +217,15 @@ if __name__ == "__main__":
     parser.add_argument('--random-cam', action=argparse.BooleanOptionalAction, default=True, help="Use the previous camera positions")
     parser.add_argument('--random-bg', action=argparse.BooleanOptionalAction, default=True, help="Add a random background to the skybox from the haven benchmark")
     parser.add_argument('--metadata', action=argparse.BooleanOptionalAction, default=True, help="Calculate masks, info and coco annotations")
+    parser.add_argument('--include-fallen', action=argparse._StoreTrueAction, help="Flag to ignore fallen objects")
 
     args = parser.parse_args()
 
     simulation_path = args.sim_path
     use_metadata = args.metadata
+    include_fallen = args.include_fallen
+    
+    print(include_fallen)
     
     folder_path = get_next_sim_folder(folder_path= simulation_path)
 
@@ -256,7 +261,11 @@ if __name__ == "__main__":
                 scene = load_schema_from_file(file_path= tmp_dir + file, data_class=SceneData)
 
                 # Render the scene
-                rend.run(scene, img_amount= int(args.img_amount), random_background= args.random_bg, random_camera_positions = args.random_cam)
+                rend.run(scene, 
+                         img_amount= int(args.img_amount), 
+                         random_background= args.random_bg, 
+                         random_camera_positions = args.random_cam,
+                         include_fallen=include_fallen)
                 
                 # Save scene to complete folder (with new camera positions)
                 save_schema_to_folder(scene, complete_dir)

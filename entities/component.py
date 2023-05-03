@@ -51,6 +51,7 @@ class Component():
         # Dreate new list of dublicate objects
         self.obj_list: list[MeshObject] = [self.obj]
 
+    # Dublicate obj until max is reached
     def add_to_obj_list(self, max: int):
         
         difference = max - len(self.obj_list)
@@ -65,8 +66,14 @@ class Component():
 
         return ElementData(name=name, pos=pos)
     
-    def from_element(self, positions: List[PositionData]):
+    # Set positions for objects, use the available ones if they exist, otherwise create a new ones. 
+    def from_element(self, positions: List[PositionData], include_fallen = True):
         
+        # Option to not include fallen objects
+        if not include_fallen:
+            positions = list(filter(lambda p: p.location[2] > 0, positions))
+        
+        # Add objects to obj list to match the amount of positions. 
         self.add_to_obj_list(max= len(positions))
         
         # Set position of all new objects. 
