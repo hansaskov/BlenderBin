@@ -80,7 +80,4 @@ class Component():
         for (position, obj) in zip(positions, self.obj_list):
             obj.set_location(position.location)
             obj.set_rotation_euler(position.orientation)
-
-    def delete(self):
-        self.obj.delete(False)
             
