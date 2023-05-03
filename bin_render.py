@@ -225,8 +225,6 @@ if __name__ == "__main__":
     use_metadata = args.metadata
     include_fallen = args.include_fallen
     
-    print(include_fallen)
-    
     folder_path = get_next_sim_folder(folder_path= simulation_path)
 
     if not folder_path:
@@ -245,6 +243,7 @@ if __name__ == "__main__":
     try:
         while i < 6:
             files = os.listdir(queue_dir)
+            files.sort()
 
             if not files:
                 print("No Scenes to render, waiting...")
