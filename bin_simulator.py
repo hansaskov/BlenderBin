@@ -9,7 +9,7 @@ sys.path.append(myDir)
 
 from file_schema.scene import SceneData
 from file_schema.config import ConfigData
-from file_schema.schema_logic import load_schema_from_file, save_scene, save_schema_to_folder
+from file_schema.schema_logic import load_schema_from_file, save_scene
 from blenderproc.python.types.MeshObjectUtility import MeshObject
 from entities.component import Component
 from entities.bin import Bin
@@ -134,10 +134,10 @@ parser.add_argument('--comp-amount-min', nargs='?', default='1', help='The min a
 parser.add_argument('--comp-amount-max', nargs='?', default='15', help='The max amount of components that can be in the bin')
 parser.add_argument('--runs',  nargs='?', default='5', help='The number of simulations you would like to do')
 parser.add_argument('--walls', action=argparse.BooleanOptionalAction, default=False, help="Simulate twice, first with walls, afterwards without")
-parser.add_argument('--config-path',     nargs='?', default='config.json', help='filepath to configuration JSON file')
+parser.add_argument('--config',     nargs='?', default='config.json', help='filepath to configuration JSON file')
 args = parser.parse_args()
 
-config_file = str(args.config_path)
+config_file = str(args.config)
 
 config_data = load_schema_from_file(file_path=config_file, data_class= ConfigData)
 simulator = Simulator(config_path= config_file, config_data= config_data)
