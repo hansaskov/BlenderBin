@@ -6,7 +6,7 @@
             "obj_id" : 1,
             "path" : "./3d_models/bop/icbin/models/obj_000001.ply",
             "random_color" : false,
-            "random_texture" : false,
+            "random_texture" : true,
             "mm_2_m" : true
         },
         {
@@ -14,7 +14,7 @@
             "obj_id" : 2,
             "path" : "./3d_models/bop/icbin/models/obj_000002.ply",
             "random_color" : false,
-            "random_texture" : false,
+            "random_texture" : true,
             "mm_2_m" : true
         }
     ],

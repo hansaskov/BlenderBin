@@ -156,6 +156,7 @@ class Render:
         if self.bin.random_color or self.bin.random_texture:
             material = self.randomize_materials(self.bin.random_texture)
             self.bin.obj.replace_materials(material)
+            self.bin.obj.add_uv_mapping("smart")
 
         # Randomize material for components.
         for comp in self.components:
@@ -163,6 +164,7 @@ class Render:
                 material = self.randomize_materials(comp.random_texture)
                 for comp in comp.obj_list:
                     comp.replace_materials(material)
+                    comp.add_uv_mapping("smart")
                     
         # Randomize lighting
         self.randomize_light()    
