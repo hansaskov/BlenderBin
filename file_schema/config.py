@@ -15,6 +15,7 @@ class ComponentData():
 class BinData():
     name: str
     path: str
+    obj_id: int
     random_color: bool
     random_texture: bool
     mm_2_m: float

@@ -7,6 +7,7 @@ from entities.entities_logic import get_downsampled_mesh
 class Bin():
     def __init__(self, data: BinData):
         self.name = data.name
+        self.obj_id = data.obj_id
         self.path = data.path
         self.random_color = data.random_color
         self.random_texture = data.random_texture
@@ -46,7 +47,8 @@ class Bin():
         # Set at middle
         self.obj.set_location([0, 0, 0])
         self.obj.set_shading_mode('auto')
-        self.obj.set_cp("category_id", 0)
+        # Set object id to 0 to not include it
+        self.obj.set_cp("category_id", self.obj_id)
         
 
     def to_element(self):

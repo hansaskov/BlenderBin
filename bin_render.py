@@ -183,6 +183,12 @@ class Render:
             bproc.camera.add_camera_pose(cam2world)
             visible_comps = self.get_visible_components_from_camera(cam2world)
             all_visible_comp = all_visible_comp.union(visible_comps)
+        
+        objects_to_annotate = all_visible_comp
+        
+        # Add bin to be annotated
+        if self.bin.obj_id != 0: 
+            objects_to_annotate.add(self.bin.obj)
             
         # Render Pipeline
         data = bproc.renderer.render()
@@ -190,7 +196,7 @@ class Render:
         bproc.writer.write_bop(
             output_dir=os.path.join(output_dir),
             dataset=self.config_data.dataset_name,
-            target_objects=  all_visible_comp,
+            target_objects= objects_to_annotate,
             colors=data['colors'],
             depths=data['depth'],
             color_file_format="JPEG",

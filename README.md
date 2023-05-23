@@ -65,12 +65,14 @@ blenderproc run bin_render.py \
 
 To use your own objects, you will need a 3D model of a box or environment and a 3D model of your component, in either the .ply or .obj format. These changes must be made in the config.json file.
 
+Components and bins with an object id of 0 will have annotations labels ignored
+
 ```json
     "components": [
         {
             "name" : "obj_000001",
-            "obj_id" : 1,
             "path" : "./3d_models/bop/icbin/models/obj_000001.ply",
+            "obj_id" : 1,
             "random_color" : false,
             "random_texture" : false,
             "mm_2_m" : true
@@ -81,6 +83,7 @@ To use your own objects, you will need a 3D model of a box or environment and a 
         {
             "name" : "box_bin",
             "path" : "./3d_models/bins/boxbin.obj",
+            "obj_id" : 0,   // Annotations are ignored for bin
             "random_color" : true, 
             "random_texture" : true,
             "mm_2_m": true,
