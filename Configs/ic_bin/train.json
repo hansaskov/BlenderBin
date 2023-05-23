@@ -23,6 +23,7 @@
         {
             "name" : "box_bin",
             "path" : "./3d_models/bins/boxbin.obj",
+            "obj_id" : 0,
             "random_color" : true, 
             "random_texture" : true,
             "mm_2_m": true,
