@@ -44,7 +44,7 @@ class AnnotationData:
     id: int
     image_id: int
     category_id: int
-    is_crowd: Optional[int]
+    iscrowd: Optional[int]
     area: int
     bbox: List[int]
     segmentation: SegmentationData

@@ -1,8 +1,9 @@
-
-
+import sys
 import os
-from ..file_schema.coco import CocoData
-from ..file_schema.schema_logic import load_schema_from_file, save_schema_to_file
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from file_schema.coco import CocoData
+from file_schema.schema_logic import load_schema_from_file, save_schema_to_file
 
 # Recursively searches for a filename in a folder and it's sub folders, up to a 
 def search_files(filename, folderpath='.', depth=-1):
@@ -48,49 +49,85 @@ def folder_difference(input_path: str, output_path: str) -> str:
     
     res = path1_str[len(commonprefix):]
     
+    # Remove leading separators
+    res = res.lstrip(os.sep)
+    
     print(res)
     
     return res
 
+def find_non_unique_annotations(annotations):
+    seen_ids = set()
+    non_unique_annotations = []
+
+    for annotation in annotations:
+        if annotation.id in seen_ids:
+            non_unique_annotations.append(annotation)
+        else:
+            seen_ids.add(annotation.id)
+
+    return non_unique_annotations
 
 
-in_folder_path = "/home/hansaskov/Desktop/code/mmdetection/data/icbin/test"
+def merge_coco_datasets(coco_paths, out_coco_filepath):
+    coco_data_list = [load_schema_from_file(file_path=coco_path, data_class=CocoData) for coco_path in coco_paths]
+
+    # Initialize counters for new image ids and annotation ids
+    img_id_count = 0
+    ann_id_count = 0
+
+    # Create a new CocoData object with info, licenses, and categories from the first dataset
+    merged_coco_data = CocoData(
+        info=coco_data_list[0].info,
+        licenses=coco_data_list[0].licenses,
+        categories=coco_data_list[0].categories,
+        annotations=[],
+        images=[],
+    )
+
+    # Iterate over each CocoData object (representing a dataset)
+    for data_class, path in zip(coco_data_list, coco_paths):
+        # Create a dictionary mapping image ids to their related annotations
+        image_to_annotations = {image.id: [] for image in data_class.images}
+        for ann in data_class.annotations:
+            image_to_annotations[ann.image_id].append(ann)
+
+        # Calculate scene path for current data_class
+        scene_path = folder_difference(path, out_coco_filepath)
+
+        # Iterate over each image in the dataset
+        for image in data_class.images:
+            old_image_id = image.id  # Save the old image id
+            image.id = img_id_count  # Assign a new, unique image id
+            image.file_name = scene_path + "/" + image.file_name  # Update the file name with scene path
+            merged_coco_data.images.append(image)  # Add the image to the merged dataset
+            img_id_count += 1  # Increment the image id counter
+
+            # Assign new, unique ids to each annotation associated with the current image
+            for ann in image_to_annotations[old_image_id]:
+                ann.id = ann_id_count  # Assign a new, unique annotation id
+                ann.image_id = image.id  # Update the image id in the annotation
+                ann.iscrowd = 0  # Ensure that iscrowd is set to 0
+                merged_coco_data.annotations.append(ann)  # Add the annotation to the merged dataset
+                ann_id_count += 1  # Increment the annotation id counter
+
+    return merged_coco_data
+
+
+
+in_folder_path = "/home/hans/Desktop/code/mmdetection/data/ic_bin_test/"
 in_coco_filename = "scene_gt_coco.json"
-out_coco_filepath = "/home/hansaskov/Desktop/code/mmdetection/data/icbin/test/new_coco.json"
+out_coco_filepath = "/home/hans/Desktop/code/mmdetection/data/ic_bin_test/scene_gt_coco.json"
 
 # Search directory for all files with the defined coco filename and return their filepath
 coco_paths = search_files(filename= in_coco_filename, folderpath=in_folder_path, depth= 2)
 coco_paths.sort()
 
-# Load the filepaths to a list on the CocoData format
-coco_data_list = [ load_schema_from_file(file_path= coco_path, data_class= CocoData) for coco_path in coco_paths ] 
+new_coco_data = merge_coco_datasets(coco_paths, out_coco_filepath)
 
-new_coco_data = CocoData(
-    info= coco_data_list[0].info,
-    licenses= coco_data_list[0].licenses,
-    categories= coco_data_list[0].categories,
-    annotations= [],
-    images= [],
-)
-
-img_id_count = 0
-ann_id_count = 0
-
-for data_class, path in zip(coco_data_list, coco_paths):
-    scene_path = folder_difference(path, out_coco_filepath )
-    for image in data_class.images:
-        annotations = list(filter(lambda elem: elem.image_id == image.id, data_class.annotations))
-        image.id = img_id_count
-        image.file_name = scene_path + "/" + image.file_name
-        for ann in annotations: 
-            ann.id = ann_id_count
-            ann.image_id = image.id
-            new_coco_data.annotations.append(ann)
-            ann_id_count += 1
-
-        new_coco_data.images.append(image)
-        img_id_count += 1
-        print("Processing img:", img_id_count)
+non_unique_annotations = find_non_unique_annotations(new_coco_data.annotations)
+for annotation in non_unique_annotations:
+    print(f"Annotation with non-unique id {annotation.id} found.")
 
 
 print("Saving to disk, please wait")
