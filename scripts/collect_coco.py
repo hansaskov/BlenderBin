@@ -1,5 +1,7 @@
 import sys
 import os
+import argparse
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from file_schema.coco import CocoData
@@ -115,21 +117,33 @@ def merge_coco_datasets(coco_paths, out_coco_filepath):
 
 
 
-in_folder_path = "/home/hans/Desktop/code/mmdetection/data/ic_bin_test/"
-in_coco_filename = "scene_gt_coco.json"
-out_coco_filepath = "/home/hans/Desktop/code/mmdetection/data/ic_bin_test/scene_gt_coco.json"
 
-# Search directory for all files with the defined coco filename and return their filepath
-coco_paths = search_files(filename= in_coco_filename, folderpath=in_folder_path, depth= 2)
+# Define command line arguments
+parser = argparse.ArgumentParser(description='Merge COCO datasets and find non-unique annotations.')
+parser.add_argument('--folderpath', type=str, help='Path to the folder containing COCO files.')
+parser.add_argument('--filename', type=str, default="scene_gt_coco.json" ,help='Name of the COCO file to merge.')
+args = parser.parse_args()
+
+# Set the input folder path, input COCO filename, and output COCO file path
+in_folder_path = args.folderpath
+in_coco_filename = args.filename
+out_coco_filepath = in_folder_path + "/" + in_coco_filename
+
+# Search directory for all files with the defined COCO filename and return their filepath
+coco_paths = search_files(filename=in_coco_filename, folderpath=in_folder_path, depth=2)
 coco_paths.sort()
 
+# Merge the COCO datasets from the input files into a new dataset
 new_coco_data = merge_coco_datasets(coco_paths, out_coco_filepath)
 
+# Find annotations with non-unique IDs in the new COCO dataset
 non_unique_annotations = find_non_unique_annotations(new_coco_data.annotations)
+
+# Print the IDs of annotations with non-unique IDs
 for annotation in non_unique_annotations:
     print(f"Annotation with non-unique id {annotation.id} found.")
 
-
+# Save the merged dataset to disk
 print("Saving to disk, please wait")
 save_schema_to_file(data_class=new_coco_data, file_path=out_coco_filepath)
 
