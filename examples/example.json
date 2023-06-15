@@ -1,48 +1,51 @@
 {
   "dataset_name": "ic_bin",
   "components": [
-    {
-      "name": "obj_000001",
-      "obj_id": 1,
-      "path": "./3d_models/bop/icbin/models/obj_000001.ply",
-      "random_color": false,
-      "random_texture": false,
-      "mm_2_m": true
-    },
-    {
-      "name": "obj_000002",
-      "obj_id": 2,
-      "path": "./3d_models/bop/icbin/models/obj_000002.ply",
-      "random_color": false,
-      "random_texture": false,
-      "mm_2_m": true
-    }
+      {
+          "name": "obj_000001",
+          "obj_id": 1,
+          "path": "./3d_models/bop/icbin/models/obj_000001.ply",
+          "random_color": false,
+          "random_texture": true,
+          "mm_2_m": true
+      },
+      {
+          "name": "obj_000002",
+          "obj_id": 2,
+          "path": "./3d_models/bop/icbin/models/obj_000002.ply",
+          "random_color": false,
+          "random_texture": true,
+          "mm_2_m": true
+      }
   ],
-
   "bins": [
-    {
-      "name": "box_bin",
-      "path": "./3d_models/bins/boxbin.obj",
-      "random_color": true,
-      "random_texture": false,
-      "mm_2_m": true,
-      "dimensions": [420, 300, 100]
-    }
+      {
+          "name": "box_bin",
+          "path": "./3d_models/bins/boxbin.obj",
+          "obj_id": 0,
+          "random_color": true,
+          "random_texture": true,
+          "mm_2_m": true,
+          "dimensions": [
+              420,
+              300,
+              100
+          ]
+      }
   ],
-
   "camera": {
-    "cx": 316.0,
-    "cy": 244.0,
-    "fx": 550.0,
-    "fy": 540.0,
-    "height": 480,
-    "width": 640,
-    "positioning": {
-        "radius_min": 0.01,
-        "radius_max": 0.5,
-        "angle_min": -45,
-        "angle_max": 90,
-        "height": 0.7
-    }
+      "cx": 316.0,
+      "cy": 244.0,
+      "fx": 550.0,
+      "fy": 540.0,
+      "height": 480,
+      "width": 640,
+      "positioning": {
+          "radius_min": 0.01,
+          "radius_max": 0.5,
+          "angle_min": -45,
+          "angle_max": 90,
+          "height": 0.7
+      }
   }
 }
