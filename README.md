@@ -10,8 +10,6 @@ Simulate objects falling in a bin and create your synthetic dataset with perfect
 
 # Installation
 
-To use the BlenderBin repository, a Linux-based operating system is required. The repository has been tested on Ubuntu 18.04 and 22.04. Additionally, CMake must be installed.
-
 To begin, download the repository:
 
 ```bash
